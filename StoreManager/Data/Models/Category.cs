@@ -7,13 +7,13 @@ namespace StoreManager.Data.Models
         [Key]
         public int CategoryId { get; set; }
 
-        [Required]
-        [StringLength(100)]
-        public string Name { get; set; }
+        [Required(ErrorMessage = "The Name field is required.")]
+        [StringLength(100, ErrorMessage = "The Name must be less than 100 characters.")]
+        public string Name { get; set; } = string.Empty;
 
         public string? Description { get; set; }
 
         // Navigation Property
-        public ICollection<Product> Products { get; set; }
+        public ICollection<Product> Products { get; set; } = new List<Product>();
     }
 }

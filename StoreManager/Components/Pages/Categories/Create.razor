@@ -3,22 +3,25 @@
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
 
-<h3>Create Category</h3>
-<EditForm Model="@NewCategory" OnValidSubmit="HandleCreate">
+<h3 class="mb-4">Create Category</h3>
+
+<EditForm Model="@NewCategory" OnValidSubmit="HandleCreate" FormName="CreateCategoryForm">
     <DataAnnotationsValidator />
-    <ValidationSummary />
+    <ValidationSummary class="text-danger" />
 
-    <div>
-        <label>Name:</label>
-        <InputText @bind-Value="NewCategory.Name" />
+    <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <InputText id="name" class="form-control" @bind-Value="NewCategory.Name" />
+        <ValidationMessage For="@(() => NewCategory.Name)" class="text-danger" />
     </div>
-    <div>
-        <label>Description:</label>
-        <InputText @bind-Value="NewCategory.Description" />
+    <div class="mb-3">
+        <label for="description" class="form-label">Description:</label>
+        <InputText id="description" class="form-control" @bind-Value="NewCategory.Description" />
     </div>
-    <button type="submit">Create</button>
-    <button @onclick="Cancel">Cancel</button>
+    <button type="submit" class="btn btn-primary me-2">Create</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
 </EditForm>
 
 @code {
@@ -26,6 +29,16 @@
 
     private async Task HandleCreate()
     {
+        // Logging for debugging
+        Console.WriteLine($"Name: {NewCategory.Name}, Description: {NewCategory.Description}");
+
+        // Validation check for debugging purposes
+        if (string.IsNullOrWhiteSpace(NewCategory.Name))
+        {
+            Console.WriteLine("Name is missing or invalid.");
+            return;
+        }
+
         DbContext.Categories.Add(NewCategory);
         await DbContext.SaveChangesAsync();
         NavManager.NavigateTo("/categories");

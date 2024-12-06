@@ -3,13 +3,16 @@
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
 
-<h3>Delete Category</h3>
-<p>Are you sure you want to delete the category "@Category?.Name"?</p>
-<p>
-    <button @onclick="HandleDelete">Yes</button>
-    <button @onclick="Cancel">No</button>
-</p>
+<h3 class="mb-4 text-danger">Delete Category</h3>
+
+<p>Are you sure you want to delete the category <strong>"@Category?.Name"</strong>?</p>
+
+<div class="mt-4">
+    <button class="btn btn-danger me-2" @onclick="HandleDelete">Yes, Delete</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</div>
 
 @code {
     [Parameter] public int CategoryId { get; set; }
@@ -18,6 +21,11 @@
     protected override async Task OnInitializedAsync()
     {
         Category = await DbContext.Categories.FindAsync(CategoryId);
+
+        if (Category == null)
+        {
+            NavManager.NavigateTo("/categories");
+        }
     }
 
     private async Task HandleDelete()

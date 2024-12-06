@@ -3,6 +3,27 @@
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3 class="mb-4">Edit Category</h3>
+
+<EditForm Model="@EditCategory" OnValidSubmit="HandleEdit" FormName="EditCategoryForm">
+    <DataAnnotationsValidator />
+    <ValidationSummary class="text-danger" />
+
+    <div class="mb-3">
+        <label for="name" class="form-label">Name:</label>
+        <InputText id="name" class="form-control" @bind-Value="EditCategory.Name" />
+        <ValidationMessage For="@(() => EditCategory.Name)" class="text-danger" />
+    </div>
+    <div class="mb-3">
+        <label for="description" class="form-label">Description:</label>
+        <InputText id="description" class="form-control" @bind-Value="EditCategory.Description" />
+    </div>
+    <button type="submit" class="btn btn-primary me-2">Save</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
 @code {
     [Parameter] public int CategoryId { get; set; }
     private Category? EditCategory = new();
@@ -10,13 +31,21 @@
     protected override async Task OnInitializedAsync()
     {
         EditCategory = await DbContext.Categories.FindAsync(CategoryId);
+
+        if (EditCategory == null)
+        {
+            NavManager.NavigateTo("/categories");
+        }
     }
 
     private async Task HandleEdit()
     {
-        DbContext.Categories.Update(EditCategory);
-        await DbContext.SaveChangesAsync();
-        NavManager.NavigateTo("/categories");
+        if (EditCategory != null)
+        {
+            DbContext.Categories.Update(EditCategory);
+            await DbContext.SaveChangesAsync();
+            NavManager.NavigateTo("/categories");
+        }
     }
 
     private void Cancel()

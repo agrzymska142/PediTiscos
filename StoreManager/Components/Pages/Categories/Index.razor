@@ -4,12 +4,15 @@
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
+@rendermode InteractiveServer
 
-<h3>Categories</h3>
+<h3 class="mb-4">Categories</h3>
+
 <p>
-    <button @onclick="CreateCategory">Add New Category</button>
+    <button class="btn btn-primary" @onclick="CreateCategory">Add New Category</button>
 </p>
-<table>
+
+<table class="table table-striped mt-3">
     <thead>
         <tr>
             <th>Name</th>
@@ -24,8 +27,8 @@
                 <td>@category.Name</td>
                 <td>@category.Description</td>
                 <td>
-                    <button @onclick="() => EditCategory(category.CategoryId)">Edit</button>
-                    <button @onclick="() => DeleteCategory(category.CategoryId)">Delete</button>
+                    <button class="btn btn-sm btn-primary me-2" @onclick="() => EditCategory(category.CategoryId)">Edit</button>
+                    <button class="btn btn-sm btn-danger" @onclick="() => DeleteCategory(category.CategoryId)">Delete</button>
                 </td>
             </tr>
         }
@@ -42,7 +45,7 @@
 
     private void CreateCategory()
     {
-        NavManager.NavigateTo("/categories/create");
+        NavManager.NavigateTo("categories/create");
     }
 
     private void EditCategory(int id)
