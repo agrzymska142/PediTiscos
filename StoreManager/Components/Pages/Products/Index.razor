@@ -1,0 +1,65 @@
+﻿@page "/products"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Products</h3>
+<p>
+    <button class="btn btn-primary" @onclick="CreateProduct">Add New Product</button>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Price</th>
+            <th>Stock</th>
+            <th>Category</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var product in Products)
+        {
+            <tr>
+                <td>@product.Name</td>
+                <td>@product.Description</td>
+                <td>@product.Price.ToString("C")</td>
+                <td>@product.Stock</td>
+                <td>@product.Category?.Name</td>
+                <td>
+                    <button class="btn btn-secondary" @onclick="() => EditProduct(product.ProductId)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteProduct(product.ProductId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Product> Products = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Products = await DbContext.Products.Include(p => p.Category).ToListAsync();
+    }
+
+    private void CreateProduct()
+    {
+        NavManager.NavigateTo("/products/create");
+    }
+
+    private void EditProduct(int id)
+    {
+        NavManager.NavigateTo($"/products/edit/{id}");
+    }
+
+    private void DeleteProduct(int id)
+    {
+        NavManager.NavigateTo($"/products/delete/{id}");
+    }
+}

@@ -1,0 +1,38 @@
+﻿@page "/products/delete/{ProductId:int}"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Delete Product</h3>
+<p>Are you sure you want to delete the product "@Product?.Name"?</p>
+<p>
+    <button class="btn btn-danger" @onclick="HandleDelete">Yes</button>
+    <button class="btn btn-secondary" @onclick="Cancel">No</button>
+</p>
+
+@code {
+    [Parameter] public int ProductId { get; set; }
+    private Product? Product;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Product = await DbContext.Products.FindAsync(ProductId);
+    }
+
+    private async Task HandleDelete()
+    {
+        if (Product != null)
+        {
+            DbContext.Products.Remove(Product);
+            await DbContext.SaveChangesAsync();
+        }
+        NavManager.NavigateTo("/products");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/products");
+    }
+}

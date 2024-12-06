@@ -1,0 +1,64 @@
+﻿@page "/products/create"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Create Product</h3>
+<EditForm Model="@NewProduct" OnValidSubmit="HandleCreate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <InputText @bind-Value="NewProduct.Name" class="form-control" />
+    </div>
+    <div>
+        <label>Description:</label>
+        <InputTextArea @bind-Value="NewProduct.Description" class="form-control" />
+    </div>
+    <div>
+        <label>Price:</label>
+        <InputNumber @bind-Value="NewProduct.Price" class="form-control" />
+    </div>
+    <div>
+        <label>Stock:</label>
+        <InputNumber @bind-Value="NewProduct.Stock" class="form-control" />
+    </div>
+    <div>
+        <label>Category:</label>
+        <InputSelect @bind-Value="NewProduct.CategoryId" class="form-control">
+            <option value="" disabled>Select a Category</option>
+            @foreach (var category in Categories)
+            {
+                <option value="@category.CategoryId">@category.Name</option>
+            }
+        </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    private Product NewProduct = new();
+    private List<Category> Categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Categories = await DbContext.Categories.ToListAsync();
+    }
+
+    private async Task HandleCreate()
+    {
+        DbContext.Products.Add(NewProduct);
+        await DbContext.SaveChangesAsync();
+        NavManager.NavigateTo("/products");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/products");
+    }
+}
