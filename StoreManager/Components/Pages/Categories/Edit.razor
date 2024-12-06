@@ -1,0 +1,26 @@
+﻿@page "/categories/edit/{CategoryId:int}"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@code {
+    [Parameter] public int CategoryId { get; set; }
+    private Category? EditCategory = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        EditCategory = await DbContext.Categories.FindAsync(CategoryId);
+    }
+
+    private async Task HandleEdit()
+    {
+        DbContext.Categories.Update(EditCategory);
+        await DbContext.SaveChangesAsync();
+        NavManager.NavigateTo("/categories");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/categories");
+    }
+}

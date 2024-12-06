@@ -1,0 +1,37 @@
+﻿@page "/categories/delete/{CategoryId:int}"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+
+<h3>Delete Category</h3>
+<p>Are you sure you want to delete the category "@Category?.Name"?</p>
+<p>
+    <button @onclick="HandleDelete">Yes</button>
+    <button @onclick="Cancel">No</button>
+</p>
+
+@code {
+    [Parameter] public int CategoryId { get; set; }
+    private Category? Category;
+
+    protected override async Task OnInitializedAsync()
+    {
+        Category = await DbContext.Categories.FindAsync(CategoryId);
+    }
+
+    private async Task HandleDelete()
+    {
+        if (Category != null)
+        {
+            DbContext.Categories.Remove(Category);
+            await DbContext.SaveChangesAsync();
+        }
+        NavManager.NavigateTo("/categories");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/categories");
+    }
+}

@@ -1,4 +1,5 @@
 ﻿@using StoreManager.Components.Account.Shared
+
 <Router AppAssembly="typeof(Program).Assembly">
     <Found Context="routeData">
         <AuthorizeRouteView RouteData="routeData" DefaultLayout="typeof(Layout.MainLayout)">
@@ -8,4 +9,17 @@
         </AuthorizeRouteView>
         <FocusOnNavigate RouteData="routeData" Selector="h1" />
     </Found>
+    <NotFound>
+        <h1>Page Not Found</h1>
+        <p>The page you're looking for doesn't exist.</p>
+    </NotFound>
 </Router>
+
+<NavMenu>
+    <!-- Categories Navigation -->
+    <AuthorizeView Roles="Administrator, Manager">
+        <NavLink href="/categories" Match="NavLinkMatch.All">Manage Categories</NavLink>
+    </AuthorizeView>
+
+    <!-- Additional links can go here -->
+</NavMenu>

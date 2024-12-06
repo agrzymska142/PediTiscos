@@ -1,0 +1,38 @@
+﻿@page "/categories/create"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+
+<h3>Create Category</h3>
+<EditForm Model="@NewCategory" OnValidSubmit="HandleCreate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Name:</label>
+        <InputText @bind-Value="NewCategory.Name" />
+    </div>
+    <div>
+        <label>Description:</label>
+        <InputText @bind-Value="NewCategory.Description" />
+    </div>
+    <button type="submit">Create</button>
+    <button @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    private Category NewCategory = new();
+
+    private async Task HandleCreate()
+    {
+        DbContext.Categories.Add(NewCategory);
+        await DbContext.SaveChangesAsync();
+        NavManager.NavigateTo("/categories");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/categories");
+    }
+}
