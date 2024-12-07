@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreManager.Data;
 
@@ -11,9 +12,11 @@ using StoreManager.Data;
 namespace StoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207165113_UpdateAga")]
+    partial class UpdateAga
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -255,112 +258,6 @@ namespace StoreManager.Migrations
                         });
                 });
 
-            modelBuilder.Entity("StoreManager.Data.Models.Order", b =>
-                {
-                    b.Property<int>("OrderId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderId"));
-
-                    b.Property<string>("ClientEmail")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("ClientName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("OrderDate")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("Status")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<decimal>("TotalAmount")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("OrderId");
-
-                    b.ToTable("Orders");
-
-                    b.HasData(
-                        new
-                        {
-                            OrderId = 1,
-                            ClientEmail = "johndoe@example.com",
-                            ClientName = "John Doe",
-                            OrderDate = new DateTime(2024, 12, 6, 17, 48, 25, 11, DateTimeKind.Local).AddTicks(9722),
-                            Status = "Pending",
-                            TotalAmount = 7.5m
-                        },
-                        new
-                        {
-                            OrderId = 2,
-                            ClientEmail = "janesmith@example.com",
-                            ClientName = "Jane Smith",
-                            OrderDate = new DateTime(2024, 12, 5, 17, 48, 25, 12, DateTimeKind.Local).AddTicks(1046),
-                            Status = "Confirmed",
-                            TotalAmount = 3.0m
-                        });
-                });
-
-            modelBuilder.Entity("StoreManager.Data.Models.OrderDetail", b =>
-                {
-                    b.Property<int>("OrderDetailId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("OrderDetailId"));
-
-                    b.Property<int>("OrderId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<decimal>("UnitPrice")
-                        .HasColumnType("decimal(18,2)");
-
-                    b.HasKey("OrderDetailId");
-
-                    b.HasIndex("OrderId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("OrderDetails");
-
-                    b.HasData(
-                        new
-                        {
-                            OrderDetailId = 1,
-                            OrderId = 1,
-                            ProductId = 1,
-                            Quantity = 2,
-                            UnitPrice = 1.5m
-                        },
-                        new
-                        {
-                            OrderDetailId = 2,
-                            OrderId = 1,
-                            ProductId = 2,
-                            Quantity = 1,
-                            UnitPrice = 2.0m
-                        },
-                        new
-                        {
-                            OrderDetailId = 3,
-                            OrderId = 2,
-                            ProductId = 2,
-                            Quantity = 1,
-                            UnitPrice = 2.0m
-                        });
-                });
-
             modelBuilder.Entity("StoreManager.Data.Models.Product", b =>
                 {
                     b.Property<int>("ProductId")
@@ -465,25 +362,6 @@ namespace StoreManager.Migrations
                         .IsRequired();
                 });
 
-            modelBuilder.Entity("StoreManager.Data.Models.OrderDetail", b =>
-                {
-                    b.HasOne("StoreManager.Data.Models.Order", "Order")
-                        .WithMany("OrderDetails")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("StoreManager.Data.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Order");
-
-                    b.Navigation("Product");
-                });
-
             modelBuilder.Entity("StoreManager.Data.Models.Product", b =>
                 {
                     b.HasOne("StoreManager.Data.Models.Category", "Category")
@@ -498,11 +376,6 @@ namespace StoreManager.Migrations
             modelBuilder.Entity("StoreManager.Data.Models.Category", b =>
                 {
                     b.Navigation("Products");
-                });
-
-            modelBuilder.Entity("StoreManager.Data.Models.Order", b =>
-                {
-                    b.Navigation("OrderDetails");
                 });
 #pragma warning restore 612, 618
         }

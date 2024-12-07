@@ -1,0 +1,63 @@
+﻿@page "/orders"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Orders</h3>
+<p>
+    <button class="btn btn-primary" @onclick="CreateOrder">Add New Order</button>
+</p>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Order Date</th>
+            <th>Client Name</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Orders)
+        {
+            <tr>
+                <td>@order.OrderDate.ToShortDateString()</td>
+                <td>@order.ClientName</td>
+                <td>@order.TotalAmount.ToString("C")</td>
+                <td>@order.Status</td>
+                <td>
+                    <button class="btn btn-warning" @onclick="() => EditOrder(order.OrderId)">Edit</button>
+                    <button class="btn btn-danger" @onclick="() => DeleteOrder(order.OrderId)">Delete</button>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Order> Orders = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Orders = await DbContext.Orders.Include(o => o.OrderDetails).ToListAsync();
+    }
+
+    private void CreateOrder()
+    {
+        NavManager.NavigateTo("/orders/create");
+    }
+
+    private void EditOrder(int id)
+    {
+        NavManager.NavigateTo($"/orders/edit/{id}");
+    }
+
+    private void DeleteOrder(int id)
+    {
+        NavManager.NavigateTo($"/orders/delete/{id}");
+    }
+}

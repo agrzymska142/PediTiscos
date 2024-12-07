@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreManager.Data;
 
@@ -11,9 +12,11 @@ using StoreManager.Data;
 namespace StoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241207174620_Orderseed")]
+    partial class Orderseed
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -291,7 +294,7 @@ namespace StoreManager.Migrations
                             OrderId = 1,
                             ClientEmail = "johndoe@example.com",
                             ClientName = "John Doe",
-                            OrderDate = new DateTime(2024, 12, 6, 17, 48, 25, 11, DateTimeKind.Local).AddTicks(9722),
+                            OrderDate = new DateTime(2024, 12, 6, 17, 46, 19, 465, DateTimeKind.Local).AddTicks(4227),
                             Status = "Pending",
                             TotalAmount = 7.5m
                         },
@@ -300,7 +303,7 @@ namespace StoreManager.Migrations
                             OrderId = 2,
                             ClientEmail = "janesmith@example.com",
                             ClientName = "Jane Smith",
-                            OrderDate = new DateTime(2024, 12, 5, 17, 48, 25, 12, DateTimeKind.Local).AddTicks(1046),
+                            OrderDate = new DateTime(2024, 12, 5, 17, 46, 19, 465, DateTimeKind.Local).AddTicks(6176),
                             Status = "Confirmed",
                             TotalAmount = 3.0m
                         });
