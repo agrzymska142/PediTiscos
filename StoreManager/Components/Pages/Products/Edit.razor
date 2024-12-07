@@ -1,0 +1,80 @@
+﻿@page "/products/edit/{ProductId:int}"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Edit Product</h3>
+
+@if (EditProduct == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@EditProduct" OnValidSubmit="HandleEdit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Name:</label>
+            <InputText @bind-Value="EditProduct.Name" class="form-control" />
+        </div>
+        <div>
+            <label>Description:</label>
+            <InputTextArea @bind-Value="EditProduct.Description" class="form-control" />
+        </div>
+        <div>
+            <label>Price:</label>
+            <InputNumber @bind-Value="EditProduct.Price" class="form-control" />
+        </div>
+        <div>
+            <label>Stock:</label>
+            <InputNumber @bind-Value="EditProduct.Stock" class="form-control" />
+        </div>
+        <div>
+            <label>Category:</label>
+            <InputSelect @bind-Value="EditProduct.CategoryId" class="form-control">
+                <option value="" disabled>Select a Category</option>
+                @foreach (var category in Categories)
+                {
+                    <option value="@category.CategoryId">@category.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int ProductId { get; set; }
+    private Product? EditProduct;
+    private List<Category> Categories = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Load the product to edit
+        EditProduct = await DbContext.Products.FindAsync(ProductId);
+
+        // Load categories for the dropdown
+        Categories = await DbContext.Categories.ToListAsync();
+    }
+
+    private async Task HandleEdit()
+    {
+        if (EditProduct != null)
+        {
+            DbContext.Products.Update(EditProduct);
+            await DbContext.SaveChangesAsync();
+            NavManager.NavigateTo("/products");
+        }
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/products");
+    }
+}
