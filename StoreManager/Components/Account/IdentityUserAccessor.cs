@@ -1,5 +1,5 @@
 using Microsoft.AspNetCore.Identity;
-using StoreManager.Data;
+using StoreManager.Data.Models;
 
 namespace StoreManager.Components.Account
 {

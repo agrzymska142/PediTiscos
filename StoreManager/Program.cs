@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using StoreManager.Components;
 using StoreManager.Components.Account;
 using StoreManager.Data;
+using StoreManager.Data.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 

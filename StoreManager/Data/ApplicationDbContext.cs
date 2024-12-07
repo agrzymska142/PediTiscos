@@ -4,21 +4,20 @@ using StoreManager.Data.Models;
 
 namespace StoreManager.Data
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
-            : base(options)
-        {
-        }
-
         public DbSet<Category> Categories { get; set; }
         public DbSet<Product> Products { get; set; }
 
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
+        {
+        }
+
+        // Seed data
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-            // Seed data (optional for testing)
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Drinks", Description = "Beverages" },
                 new Category { CategoryId = 2, Name = "Snacks", Description = "Light meals and snacks" }

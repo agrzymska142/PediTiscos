@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
-using StoreManager.Data;
+using StoreManager.Data.Models;
 
 namespace StoreManager.Components.Account
 {

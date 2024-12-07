@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
 using StoreManager.Components.Account.Pages;
 using StoreManager.Components.Account.Pages.Manage;
-using StoreManager.Data;
+using StoreManager.Data.Models;
 
 namespace Microsoft.AspNetCore.Routing
 {
