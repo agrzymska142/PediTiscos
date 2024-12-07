@@ -8,8 +8,10 @@
 	<RazorGenerateStaticAssets>true</RazorGenerateStaticAssets>
   </PropertyGroup>
 
-  <ItemGroup>
-    <FrameworkReference Include="Microsoft.AspNetCore.App" />
+	<ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components" Version="8.0.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebView.Maui" Version="8.0.0" />
+    <!-- Any other necessary packages for RCL -->
   </ItemGroup>
 
   <ItemGroup>
