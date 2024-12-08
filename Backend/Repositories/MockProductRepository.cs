@@ -2,13 +2,13 @@
 
 namespace Backend.Repositories
 {
-    public class MockProductRepository : IProductRepository
+    /*public class MockProductRepository : IProductRepository
     {
         private readonly List<Product> _products = new()
         {
-            new Product { Id = 1, Name = "Soda", Category = "Beverages", Price = 1.5M, IsAvailable = true },
-            new Product { Id = 2, Name = "Sandwich", Category = "Foods", Price = 4.0M, IsAvailable = true },
-            new Product { Id = 3, Name = "Beer", Category = "Beverages", Price = 2.5M, IsAvailable = false },
+            new Product { ProductId = 1, Name = "Soda", Category = "Beverages", Price = 1.5M, IsAvailable = true },
+            new Product { ProductId = 2, Name = "Sandwich", Category = "Foods", Price = 4.0M, IsAvailable = true },
+            new Product { ProductId = 3, Name = "Beer", Category = "Beverages", Price = 2.5M, IsAvailable = false },
         };
 
         public IEnumerable<Product> GetAllProducts() => _products;
@@ -34,5 +34,5 @@ namespace Backend.Repositories
         }
 
         public void DeleteProduct(int id) => _products.RemoveAll(p => p.Id == id);
-    }
+    }*/
 }

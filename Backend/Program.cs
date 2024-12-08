@@ -1,4 +1,7 @@
+using Backend.Models;
 using Backend.Repositories;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +9,16 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddDbContext<PediTiscosDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
+    .AddEntityFrameworkStores<PediTiscosDbContext>()
+    .AddDefaultTokenProviders();
+
+
 // Register the mock repository
-builder.Services.AddScoped<IProductRepository, MockProductRepository>();
+//builder.Services.AddScoped<IProductRepository, MockProductRepository>();
 
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
