@@ -8,7 +8,7 @@ namespace Backend.Controllers
     [ApiController]
     public class ProductsController : ControllerBase
     {
-        private readonly IProductRepository _repository;
+        /*private readonly IProductRepository _repository;
 
         public ProductsController(IProductRepository repository)
         {
@@ -49,6 +49,6 @@ namespace Backend.Controllers
         {
             _repository.DeleteProduct(id);
             return NoContent();
-        }
+        }*/
     }
 }
