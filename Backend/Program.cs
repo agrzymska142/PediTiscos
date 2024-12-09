@@ -20,6 +20,7 @@ builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
     .AddDefaultTokenProviders();
 
 
+
 // Register the mock repository
 //builder.Services.AddScoped<IProductRepository, MockProductRepository>();
 builder.Services.AddAuthentication(options =>
