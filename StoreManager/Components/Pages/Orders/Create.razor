@@ -1,0 +1,52 @@
+﻿@page "/orders/create"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Create Order</h3>
+
+<EditForm Model="@NewOrder" OnValidSubmit="HandleCreate">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div>
+        <label>Client Name:</label>
+        <InputText @bind-Value="NewOrder.ClientName" class="form-control" />
+    </div>
+    <div>
+        <label>Client Email:</label>
+        <InputText @bind-Value="NewOrder.ClientEmail" class="form-control" />
+    </div>
+    <div>
+        <label>Total Amount:</label>
+        <InputNumber @bind-Value="NewOrder.TotalAmount" class="form-control" />
+    </div>
+    <div>
+        <label>Status:</label>
+        <InputSelect @bind-Value="NewOrder.Status" class="form-control">
+            <option value="Pending">Pending</option>
+            <option value="Confirmed">Confirmed</option>
+            <option value="Rejected">Rejected</option>
+        </InputSelect>
+    </div>
+    <button type="submit" class="btn btn-primary">Create</button>
+    <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+</EditForm>
+
+@code {
+    private Order NewOrder = new();
+
+    private async Task HandleCreate()
+    {
+        DbContext.Orders.Add(NewOrder);
+        await DbContext.SaveChangesAsync();
+        NavManager.NavigateTo("/orders");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/orders");
+    }
+}

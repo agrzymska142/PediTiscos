@@ -1,0 +1,65 @@
+﻿@page "/orders/edit/{OrderId:int}"
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Edit Order</h3>
+
+@if (EditOrder == null)
+{
+    <p>Loading...</p>
+}
+else
+{
+    <EditForm Model="@EditOrder" OnValidSubmit="HandleEdit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div>
+            <label>Client Name:</label>
+            <InputText @bind-Value="EditOrder.ClientName" class="form-control" />
+        </div>
+        <div>
+            <label>Client Email:</label>
+            <InputText @bind-Value="EditOrder.ClientEmail" class="form-control" />
+        </div>
+        <div>
+            <label>Total Amount:</label>
+            <InputNumber @bind-Value="EditOrder.TotalAmount" class="form-control" />
+        </div>
+        <div>
+            <label>Status:</label>
+            <InputSelect @bind-Value="EditOrder.Status" class="form-control">
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+                <option value="Rejected">Rejected</option>
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int OrderId { get; set; }
+    private Order? EditOrder;
+
+    protected override async Task OnInitializedAsync()
+    {
+        EditOrder = await DbContext.Orders.FindAsync(OrderId);
+    }
+
+    private async Task HandleEdit()
+    {
+        DbContext.Orders.Update(EditOrder!);
+        await DbContext.SaveChangesAsync();
+        NavManager.NavigateTo("/orders");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/orders");
+    }
+}
