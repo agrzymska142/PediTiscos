@@ -16,12 +16,28 @@ public class ProductsController : ControllerBase
         _context = context;
     }
 
-    // 1. Visualize all available products
-    [HttpGet("available")]
-    public async Task<IActionResult> GetAvailableProducts()
+    // 1. GET /api/Products: Retrieve a list of all products with filtering and searching
+    [HttpGet]
+    public async Task<IActionResult> GetAllProducts(
+        [FromQuery] int? categoryId,
+        [FromQuery] string? search,
+        [FromQuery] bool? available)
     {
-        var products = await _context.Products
-            .Where(p => p.Stock > 0)
+        var query = _context.Products.AsQueryable();
+
+        // Filter by category
+        if (categoryId.HasValue)
+            query = query.Where(p => p.CategoryId == categoryId);
+
+        // Search by name or description
+        if (!string.IsNullOrEmpty(search))
+            query = query.Where(p => p.Name.Contains(search) || (p.Description != null && p.Description.Contains(search)));
+
+        // Filter by availability
+        if (available.HasValue)
+            query = query.Where(p => available.Value ? p.Stock > 0 : p.Stock == 0);
+
+        var products = await query
             .Include(p => p.Category)
             .ToListAsync();
 
@@ -38,29 +54,31 @@ public class ProductsController : ControllerBase
         return Ok(productDtos);
     }
 
-    // 2. Filter products by category
-    [HttpGet("by-category/{categoryId}")]
-    public async Task<IActionResult> GetProductsByCategory(int categoryId)
+    // 2. GET /api/Products/{id}: Retrieve a specific product by its ID
+    [HttpGet("{id}")]
+    public async Task<IActionResult> GetProductById(int id)
     {
-        var products = await _context.Products
-            .Where(p => p.CategoryId == categoryId && p.Stock > 0)
+        var product = await _context.Products
             .Include(p => p.Category)
-            .ToListAsync();
+            .FirstOrDefaultAsync(p => p.ProductId == id);
 
-        var productDtos = products.Select(p => new ProductDto
+        if (product == null)
+            return NotFound($"Product with ID {id} not found.");
+
+        var productDto = new ProductDto
         {
-            ProductId = p.ProductId,
-            Name = p.Name,
-            Description = p.Description,
-            Price = p.Price,
-            Stock = p.Stock,
-            CategoryName = p.Category?.Name
-        }).ToList();
+            ProductId = product.ProductId,
+            Name = product.Name,
+            Description = product.Description,
+            Price = product.Price,
+            Stock = product.Stock,
+            CategoryName = product.Category?.Name
+        };
 
-        return Ok(productDtos);
+        return Ok(productDto);
     }
 
-    // 3. View a randomly featured product
+    // 3. GET /api/Products/Featured: Retrieve a featured product
     [HttpGet("featured")]
     public async Task<IActionResult> GetFeaturedProduct()
     {
