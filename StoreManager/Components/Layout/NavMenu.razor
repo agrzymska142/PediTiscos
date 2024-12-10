@@ -1,5 +1,6 @@
 ﻿@inject NavigationManager NavigationManager
 
+
 <div class="top-row ps-3 navbar navbar-dark">
     <div class="container-fluid">
         <a class="navbar-brand" href="/">StoreManager</a>
@@ -38,12 +39,11 @@
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
-                    <form action="Account/Logout" method="post">
-                        <button type="submit" class="nav-link">
-                            <span class="bi bi-box-arrow-left" aria-hidden="true"></span> Logout
-                        </button>
-                    </form>
+                    <NavLink class="nav-link" href="Account/Logout">
+                        <span class="bi bi-box-arrow-left" aria-hidden="true"></span> Logout
+                    </NavLink>
                 </div>
+
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">

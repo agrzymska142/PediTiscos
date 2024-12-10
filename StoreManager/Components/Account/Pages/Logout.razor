@@ -1,0 +1,41 @@
+﻿@page "/Account/Logout"
+
+@using Microsoft.AspNetCore.Identity
+@using StoreManager.Data.Models
+
+@inject SignInManager<ApplicationUser> SignInManager
+@inject ILogger<Logout> Logger
+@inject NavigationManager NavigationManager
+
+<PageTitle>Logout</PageTitle>
+
+<h1>Logging out...</h1>
+
+<div>
+    <p>You are being logged out. Please wait...</p>
+    <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
+
+@code {
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Perform the logout operation
+            await SignInManager.SignOutAsync();
+            Logger.LogInformation("User logged out.");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred during logout.");
+            // Optionally, you can handle errors here (e.g., show an error message)
+        }
+        finally
+        {
+            // Redirect the user to the home page or login page after logout
+            NavigationManager.NavigateTo("/");
+        }
+    }
+}
