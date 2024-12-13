@@ -1,0 +1,51 @@
+﻿@page "/users"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<h3>Users</h3>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Roles</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var user in Users)
+        {
+            <tr>
+                <td>@user.UserName</td>
+                <td>@user.Email</td>
+                <td>@(UserRoles.ContainsKey(user.Id) ? string.Join(", ", UserRoles[user.Id]) : "No roles")</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<ApplicationUser> Users = new();
+    private Dictionary<string, List<string>> UserRoles = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch all users
+        Users = await DbContext.Users.ToListAsync();
+
+        // Fetch all roles and map them to users
+        var userRoles = await DbContext.UserRoles.ToListAsync();
+        var roles = await DbContext.Roles.ToListAsync();
+
+        UserRoles = userRoles
+            .GroupBy(ur => ur.UserId)
+            .ToDictionary(
+                g => g.Key,
+                g => g.Select(ur => roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name).Where(roleName => roleName != null).ToList()
+            );
+    }
+}
