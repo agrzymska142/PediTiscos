@@ -1,0 +1,42 @@
+﻿@* TopPart.razor *@
+<div class="top-bar">
+    <div class="logo">
+        <span>PediTiscos</span>
+    </div>
+    <div class="navigation">
+        <a href="#">Home</a>
+        <a href="#">Fruits</a>
+        <a href="#">About</a>
+        <a href="#">Contact</a>
+    </div>
+</div>
+
+<style>
+    .top-bar {
+        background-color: #00AEEF; /* Light blue color */
+        color: white;
+        height: 60px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 0 20px;
+        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
+        font-family: Arial, sans-serif;
+    }
+
+        .top-bar .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .top-bar .navigation a {
+            color: white;
+            text-decoration: none;
+            margin-left: 15px;
+            font-size: 1rem;
+        }
+
+            .top-bar .navigation a:hover {
+                text-decoration: underline;
+            }
+</style>

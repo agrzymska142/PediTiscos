@@ -15,6 +15,7 @@
   <ItemGroup>
     <Folder Include="Data\Interfaces\" />
     <Folder Include="Data\Services\" />
+    <Folder Include="Shared\" />
   </ItemGroup>
 
 </Project>

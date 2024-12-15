@@ -3,27 +3,32 @@
 @using System.Net.Http.Json
 @using RCL.Data.DTO
 
-<h3>Categories</h3>
+<nav class="nav-menu">
 
-@if (categories == null)
-{
-    <p>Loading categories...</p>
-}
-else if (categories.Count == 0)
-{
-    <p>No categories available.</p>
-}
-else
-{
-    <ul>
-        @foreach (var category in categories)
-        {
-            <li>
-                <strong>@category.Name</strong>: @category.Description
-            </li>
-        }
-    </ul>
-}
+    @if (categories == null)
+    {
+        <p>Loading categories...</p>
+    }
+    else if (categories.Count == 0)
+    {
+        <p>No categories available.</p>
+    }
+    else
+    {
+        <div class="categories-container">
+            @foreach (var category in categories)
+            {
+                <div class="category-card">
+                    <a href="category/@category.CategoryId" class="category-link">
+                        <img src="https://via.placeholder.com/150" alt="@category.Name" class="category-image" />
+                        <div class="category-name">@category.Name</div>
+                        <div class="category-description">@category.Description</div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</nav>
 
 @code {
     private List<CategoryDTO> categories;
@@ -40,3 +45,63 @@ else
         }
     }
 }
+
+<style>
+    .nav-menu {
+        padding: 10px;
+        background-color: #FFF8E1;
+        color: white;
+    }
+
+    .top-bar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .logo {
+        max-height: 40px;
+    }
+
+    h3 {
+        margin: 0;
+    }
+
+    .categories-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .category-card {
+        background-color: white;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .category-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .category-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .category-description {
+        font-size: 0.9rem;
+    }
+
+    .category-link {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
