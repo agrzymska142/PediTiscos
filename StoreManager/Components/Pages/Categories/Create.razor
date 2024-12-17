@@ -1,9 +1,12 @@
 ﻿@page "/categories/create"
+@using Microsoft.AspNetCore.Authorization
 @using StoreManager.Data
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Administrator, Employee")]
 
 <h3 class="mb-4">Create Category</h3>
 

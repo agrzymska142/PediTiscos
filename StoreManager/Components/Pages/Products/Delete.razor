@@ -1,9 +1,12 @@
 ﻿@page "/products/delete/{ProductId:int}"
 @using StoreManager.Data
 @using StoreManager.Data.Models
+@using Microsoft.AspNetCore.Authorization
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Administrator, Employee")]
 
 <h3>Delete Product</h3>
 <p>Are you sure you want to delete the product "@Product?.Name"?</p>

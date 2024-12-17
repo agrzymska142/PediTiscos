@@ -1,10 +1,13 @@
 ﻿@page "/orders/delete/{OrderId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
 @using StoreManager.Data
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Administrator, Employee")]
 
 <h3 class="text-danger">Delete Order</h3>
 

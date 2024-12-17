@@ -1,10 +1,15 @@
 ﻿@page "/users"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Identity
 @using Microsoft.EntityFrameworkCore
 @using StoreManager.Data
 @using StoreManager.Data.Models
 @inject ApplicationDbContext DbContext
 @inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Administrator, Employee")]
 
 <h3>Users</h3>
 
@@ -14,38 +19,118 @@
             <th>Name</th>
             <th>Email</th>
             <th>Roles</th>
+            <th>Status</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
         @foreach (var user in Users)
         {
             <tr>
-                <td>@user.UserName</td>
+                <td>@string.Join(" ", user.Name, user.Surname)</td>
                 <td>@user.Email</td>
                 <td>@(UserRoles.ContainsKey(user.Id) ? string.Join(", ", UserRoles[user.Id]) : "No roles")</td>
+                <td>@user.Status</td>
+                <td>
+                    @if (currentUserEmail != user.Email)
+                    {
+                        @if (UserRoles.GetValueOrDefault(user.Id)?.Contains("Employee") == true || UserRoles.GetValueOrDefault(user.Id)?.Contains("Administrator") == true)
+                        {
+                            <AuthorizeView Roles = "Administrator">
+                                <Authorized>
+                                    @if (UserRoles.GetValueOrDefault(user.Id)?.Contains("Customer") == true)
+                                    {
+                                        <button class="btn btn-sm @GetStatusButtonClass(user.Status.ToString())" @onclick="() => ToggleCustomerStatus(user.Id)">
+                                            @GetStatusButtonText(user.Status.ToString())
+                                        </button>
+                                    }
+                                    <button class="btn btn-primary" @onclick="() => ManageRoles(user.Id)">Manage Roles</button>
+                                </Authorized>
+                            </AuthorizeView>
+                        }
+                        else
+                        {
+                            @if (UserRoles.GetValueOrDefault(user.Id)?.Contains("Customer") == true)
+                            {
+                                <button class="btn btn-sm @GetStatusButtonClass(user.Status.ToString())" @onclick="() => ToggleCustomerStatus(user.Id)">
+                                    @GetStatusButtonText(user.Status.ToString())
+                                </button>
+                            }
+                            <button class="btn btn-primary" @onclick="() => ManageRoles(user.Id)">Manage Roles</button>
+                        }
+                        
+                    }
+                </td>
             </tr>
         }
     </tbody>
 </table>
 
+
 @code {
     private List<ApplicationUser> Users = new();
     private Dictionary<string, List<string>> UserRoles = new();
+    private List<IdentityRole> Roles = new();
+    private string currentUserEmail;
 
     protected override async Task OnInitializedAsync()
     {
-        // Fetch all users
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        currentUserEmail = user.Identity.Name;
+
+        await LoadUsersAndRoles();
+    }
+
+    private async Task LoadUsersAndRoles()
+    {
         Users = await DbContext.Users.ToListAsync();
+        Roles = await DbContext.Roles.ToListAsync();
 
-        // Fetch all roles and map them to users
         var userRoles = await DbContext.UserRoles.ToListAsync();
-        var roles = await DbContext.Roles.ToListAsync();
-
         UserRoles = userRoles
             .GroupBy(ur => ur.UserId)
             .ToDictionary(
                 g => g.Key,
-                g => g.Select(ur => roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name).Where(roleName => roleName != null).ToList()
+                g => g.Select(ur => Roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name).Where(roleName => roleName != null).ToList()
             );
+    }
+
+    private void ManageRoles(string userId)
+    {
+        NavManager.NavigateTo($"/users/manage/{userId}");
+    }
+
+    private async Task ToggleCustomerStatus(string userId)
+    {
+        var user = await DbContext.Users.FirstOrDefaultAsync(u => u.Id == userId);
+
+        if (user != null && UserRoles.GetValueOrDefault(user.Id)?.Contains("Customer") == true)
+        {
+            // Toggle status
+            if (user.Status.ToString() == "Active")
+            {
+                Enum.TryParse("Pending", out UserStatus pendingStatus);
+                user.Status = pendingStatus;
+            }
+            else
+            {
+                Enum.TryParse("Active", out UserStatus activeStatus);
+                user.Status = activeStatus;
+            }
+
+            await DbContext.SaveChangesAsync(); // Save changes to the database
+            await LoadUsersAndRoles(); // Refresh user list and roles
+        }
+    }
+
+    private string GetStatusButtonText(string? status)
+    {
+        return status == "Active" ? "Deactivate" : "Activate";
+    }
+
+    private string GetStatusButtonClass(string? status)
+    {
+        return status == "Active" ? "btn-danger" : "btn-success";
     }
 }

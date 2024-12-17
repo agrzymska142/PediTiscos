@@ -25,17 +25,17 @@ namespace StoreManager.Data
             // Define test users
             var users = new[]
             {
-            new { Email = "admin@example.com", Password = "Admin123!", Role = "Administrator" },
-            new { Email = "manager@example.com", Password = "Manager123!", Role = "Customer" },
-            new { Email = "user@example.com", Password = "User123!", Role = "Employee" }
-        };
+                new { Name = "John", Surname = "Doe", Email = "admin@example.com", Password = "Admin123!", Role = "Administrator" },
+                new { Name = "Kate", Surname = "Smith", Email = "customer@example.com", Password = "Customer123!", Role = "Customer" },
+                new { Name = "Bob", Surname = "Ross", Email = "employee@example.com", Password = "Employee123!", Role = "Employee" }
+            };
 
             foreach (var testUser in users)
             {
                 var user = await userManager.FindByEmailAsync(testUser.Email);
                 if (user == null)
                 {
-                    user = new ApplicationUser { UserName = testUser.Email, Email = testUser.Email, EmailConfirmed = true };
+                    user = new ApplicationUser { Name = testUser.Name, Surname = testUser.Surname, UserName = testUser.Email, Email = testUser.Email, EmailConfirmed = true };
                     var result = await userManager.CreateAsync(user, testUser.Password);
                     if (result.Succeeded)
                     {

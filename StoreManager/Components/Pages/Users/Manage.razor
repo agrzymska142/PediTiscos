@@ -1,0 +1,155 @@
+﻿@page "/users/manage/{UserId}"
+@using Microsoft.EntityFrameworkCore
+@using Microsoft.AspNetCore.Authorization
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@inject AuthenticationStateProvider AuthStateProvider
+@rendermode InteractiveServer
+
+@attribute [Authorize(Roles = "Administrator, Employee")]
+
+<h3 class="mb-4">Manage User Role</h3>
+
+@if (User == null)
+{
+    <p>Loading user details...</p>
+}
+else
+{
+    <div class="mb-4">
+        <h5>User Details</h5>
+        <p><strong>Name:</strong> @User.Name @User.Surname</p>
+        <p><strong>Email:</strong> @User.Email</p>
+        <p><strong>Current Role:</strong> @string.Join(", ", CurrentRoles)</p>
+    </div>
+
+    <div>
+        <h5>Update Role</h5>
+        <div class="form-group mb-3">
+            <label for="newRole">Select New Role</label>
+            <select id="newRole" class="form-control" @bind="SelectedRole">
+                <option value="">No Role</option> <!-- Option for No Role -->
+                @foreach (var role in AvailableRoles)
+                {
+                    <option value="@role">@role</option>
+                }
+            </select>
+        </div>
+        <button class="btn btn-primary me-2" @onclick="UpdateUserRole">Submit</button>
+        <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
+    </div>
+}
+
+@code {
+    [Parameter]
+    public string UserId { get; set; } = string.Empty;
+
+    private ApplicationUser? User;
+    private List<string> CurrentRoles = new();
+    private List<string> AvailableRoles = new(); // Initialize empty, will be populated dynamically
+    private string SelectedRole = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Fetch user details
+        User = await DbContext.Users.FindAsync(UserId);
+
+        if (User == null)
+        {
+            // Redirect if user is not found
+            NavManager.NavigateTo("/users");
+            return;
+        }
+
+        // Fetch current roles of the user being managed
+        var userRoles = await DbContext.UserRoles
+            .Where(ur => ur.UserId == User.Id)
+            .ToListAsync();
+
+        var roles = await DbContext.Roles.ToListAsync();
+
+        CurrentRoles = userRoles
+            .Select(ur => roles.FirstOrDefault(r => r.Id == ur.RoleId)?.Name)
+            .Where(roleName => roleName != null)
+            .ToList();
+
+        // Determine the roles the current user can assign
+        await SetAvailableRoles();
+    }
+
+    private async Task SetAvailableRoles()
+    {
+        // Fetch current user's roles
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var currentUserEmail = authState.User.Identity?.Name;
+
+        if (string.IsNullOrEmpty(currentUserEmail)) return;
+
+        var currentUser = await DbContext.Users
+            .FirstOrDefaultAsync(u => u.Email == currentUserEmail);
+
+        if (currentUser == null) return;
+
+        var currentUserRoles = await DbContext.UserRoles
+            .Where(ur => ur.UserId == currentUser.Id)
+            .Select(ur => ur.RoleId)
+            .ToListAsync();
+
+        var roles = await DbContext.Roles.ToListAsync();
+        var currentUserRoleNames = roles
+            .Where(r => currentUserRoles.Contains(r.Id))
+            .Select(r => r.Name)
+            .ToList();
+
+        // Set available roles based on current user's roles
+        if (currentUserRoleNames.Contains("Administrator"))
+        {
+            // Administrator can manage all roles
+            AvailableRoles = roles.Select(r => r.Name).ToList();
+        }
+        else if (currentUserRoleNames.Contains("Employee"))
+        {
+            // Employee can only manage Customer role
+            AvailableRoles = new List<string> { "Customer" };
+        }
+    }
+
+    private async Task UpdateUserRole()
+    {
+        if (User == null) return;
+
+        // Remove all current roles
+        var userRoles = await DbContext.UserRoles
+            .Where(ur => ur.UserId == User.Id)
+            .ToListAsync();
+
+        DbContext.UserRoles.RemoveRange(userRoles);
+
+        // Add the new role if one is selected
+        if (!string.IsNullOrEmpty(SelectedRole))
+        {
+            var role = await DbContext.Roles.FirstOrDefaultAsync(r => r.Name == SelectedRole);
+            if (role != null)
+            {
+                DbContext.UserRoles.Add(new Microsoft.AspNetCore.Identity.IdentityUserRole<string>
+                    {
+                        UserId = User.Id,
+                        RoleId = role.Id
+                    });
+            }
+        }
+
+        await DbContext.SaveChangesAsync();
+
+        // Navigate back to users page
+        NavManager.NavigateTo("/users");
+    }
+
+    private void Cancel()
+    {
+        NavManager.NavigateTo("/users");
+    }
+}
+
