@@ -102,4 +102,30 @@ public class ProductsController : ControllerBase
 
         return Ok(productDto);
     }
+
+
+    [HttpPost("AddToCart")]
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDto addToCartDto)
+    {
+        // Validate input
+        if (addToCartDto.Quantity <= 0)
+            return BadRequest("Quantity must be greater than 0.");
+
+        var product = await _context.Products.FindAsync(addToCartDto.ProductId);
+        if (product == null)
+            return NotFound($"Product with ID {addToCartDto.ProductId} not found.");
+
+        if (product.Stock < addToCartDto.Quantity)
+            return BadRequest("Not enough stock available.");
+
+        // Simulate adding to cart (for now, reduce stock directly)
+        product.Stock -= addToCartDto.Quantity;
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Message = "Product added to cart.",
+            RemainingStock = product.Stock
+        });
+    }
 }

@@ -26,6 +26,7 @@
                         <div class="product-price">Price: @product.Price.ToString("C")</div>
                         <div class="product-stock">Stock: @product.Stock</div>
                     </a>
+                    <button class="add-to-cart-button" @onclick="() => AddToCart(product)">Add to Cart</button>
                 </div>
             }
         </div>
@@ -56,6 +57,42 @@
         {
             Console.WriteLine($"Error fetching products: {ex.Message}");
         }
+    }
+    private async Task AddToCart(ProductDTO product)
+    {
+        try
+        {
+            int quantity = await ShowQuantityDialog(product.Name);
+            if (quantity <= 0)
+                return;
+
+            var addToCartDto = new
+            {
+                ProductId = product.ProductId,
+                Quantity = quantity
+            };
+
+            var response = await Http.PostAsJsonAsync("api/Products/AddToCart", addToCartDto);
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<dynamic>();
+                Console.WriteLine($"Added to cart: {result}");
+            }
+            else
+            {
+                Console.WriteLine($"Failed to add to cart: {await response.Content.ReadAsStringAsync()}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding to cart: {ex.Message}");
+        }
+    }
+
+    private async Task<int> ShowQuantityDialog(string productName)
+    {
+        // Simulate user input for quantity (e.g., replace with a modal dialog in the future)
+        return await Task.FromResult(1);
     }
 }
 
