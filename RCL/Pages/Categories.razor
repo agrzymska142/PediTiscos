@@ -19,7 +19,7 @@
             @foreach (var category in categories)
             {
                 <div class="category-card">
-                    <a href="category/@category.CategoryId" class="category-link">
+                    <a href="products/@category.CategoryId" class="category-link">
                         <img src="https://via.placeholder.com/150" alt="@category.Name" class="category-image" />
                         <div class="category-name">@category.Name</div>
                         <div class="category-description">@category.Description</div>
@@ -69,8 +69,14 @@
 
     .categories-container {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
+        overflow-x: scroll;
+        white-space: nowrap;
+        padding: 10px;
         margin-top: 10px;
+        width: 100%; /* Use percentage to fill the parent */
+        max-width: 1000px; /* Limit to prevent stretching */
+        margin: 0 auto; /* Center the container */
     }
 
     .category-card {
@@ -79,7 +85,7 @@
         border: 1px solid #ddd;
         border-radius: 5px;
         box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        margin: 10px;
+        margin-right: 10px;
         padding: 10px;
         width: 200px;
         text-align: center;

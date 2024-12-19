@@ -1,0 +1,86 @@
+﻿@page "/product/{productId:int}"
+@inject HttpClient Http
+@using System.Net.Http.Json
+@using RCL.Data.DTO
+
+<style>
+    .product-container {
+        display: flex;
+        justify-content: center;
+        margin: 20px 0;
+    }
+
+    .product-card {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 15px;
+        width: 300px;
+        text-align: center;
+    }
+
+    .product-card-header {
+        background-color: #f8f9fa;
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        border-radius: 8px 8px 0 0;
+    }
+
+        .product-card-header h3 {
+            margin: 0;
+            font-size: 1.25rem;
+        }
+
+    .product-card-body p {
+        margin: 5px 0;
+    }
+
+    .loading-message {
+        text-align: center;
+        padding: 20px;
+        font-size: 1.25rem;
+        color: #777;
+    }
+</style>
+
+<div class="product-container">
+    @if (product == null)
+    {
+        <p class="loading-message">Loading product...</p>
+    }
+    else
+    {
+        <div class="product-card">
+            <div class="product-card-header">
+                <h3>@product.Name</h3>
+            </div>
+            <div class="product-card-body">
+                <img src="https://via.placeholder.com/300" alt="@product.Name" />
+                <p>@product.Description</p>
+                <p><strong>Price:</strong> @product.Price.ToString("C")</p>
+                <p><strong>Stock:</strong> @product.Stock</p>
+            </div>
+        </div>
+    }
+</div>
+
+@code {
+    private ProductDTO product;
+
+    [Parameter]
+    public int productId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            product = await Http.GetFromJsonAsync<ProductDTO>($"api/Products/{productId}");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching product details: {ex.Message}");
+            // Consider adding error handling logic here, e.g., display an error message to the user
+        }
+    }
+}

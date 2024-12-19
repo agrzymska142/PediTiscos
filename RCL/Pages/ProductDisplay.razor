@@ -1,0 +1,118 @@
+﻿@page "/products/{categoryId:int?}"
+@inject HttpClient Http
+@using System.Net.Http.Json
+@using RCL.Data.DTO
+
+<nav class="nav-menu">
+
+    @if (products == null)
+    {
+        <p>Loading products...</p>
+    }
+    else if (products.Count == 0)
+    {
+        <p>No products available.</p>
+    }
+    else
+    {
+        <div class="products-container">
+            @foreach (var product in products)
+            {
+                <div class="product-card">
+                    <a href="product/@product.ProductId" class="product-link">
+                        <img src="https://via.placeholder.com/150" alt="@product.Name" class="product-image" />
+                        <div class="product-name">@product.Name</div>
+                        <div class="product-description">@product.Description</div>
+                        <div class="product-price">Price: @product.Price.ToString("C")</div>
+                        <div class="product-stock">Stock: @product.Stock</div>
+                    </a>
+                </div>
+            }
+        </div>
+    }
+</nav>
+
+@code {
+    private List<ProductDTO> products;
+
+    [Parameter]
+    public int? CategoryId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            Console.WriteLine($"Fetching products for category {CategoryId}");
+            if (CategoryId.HasValue)
+            {
+                products = await Http.GetFromJsonAsync<List<ProductDTO>>($"api/Products?categoryId={CategoryId.Value}");
+            }
+            else
+            {
+                products = await Http.GetFromJsonAsync<List<ProductDTO>>("api/Products");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching products: {ex.Message}");
+        }
+    }
+}
+
+<style>
+    .nav-menu {
+        padding: 10px;
+        background-color: #FFF8E1;
+        color: white;
+    }
+
+    .products-container {
+        display: flex;
+        flex-wrap: wrap;
+        margin-top: 10px;
+    }
+
+    .product-card {
+        background-color: white;
+        color: #333;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+        margin: 10px;
+        padding: 10px;
+        width: 200px;
+        text-align: center;
+        transition: transform 0.2s ease-in-out;
+    }
+
+        .product-card:hover {
+            transform: scale(1.05);
+            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+    .product-name {
+        font-weight: bold;
+        margin-bottom: 5px;
+    }
+
+    .product-description {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+    }
+
+    .product-price {
+        font-size: 0.9rem;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .product-stock {
+        font-size: 0.9rem;
+        color: green;
+    }
+
+    .product-link {
+        text-decoration: none;
+        color: inherit;
+    }
+</style>
