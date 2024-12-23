@@ -1,0 +1,129 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject ITokenService TokenService
+@using RCL.Data.Interfaces
+@using System.Net.Http.Headers
+@using System.Net.Http.Json
+
+<div class="login-container">
+    <h2>Login</h2>
+    <p>@message</p>
+    <form @onsubmit="HandleLogin">
+        <div>
+            <label for="username">Username:</label>
+            <input id="username" @bind="loginModel.UserName" />
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input id="password" type="password" @bind="loginModel.Password" />
+        </div>
+        <button type="submit">Login</button>
+    </form>
+</div>
+
+@code {
+    private LoginModel loginModel = new();
+    private string message = string.Empty;
+
+    private async Task HandleLogin()
+    {
+        message = string.Empty;
+
+        try
+        {
+            // Send login request to the API
+            var response = await Http.PostAsJsonAsync("api/auth/login", loginModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
+                if (result?.Token is not null)
+                {
+                    // Save the token using the token service
+                    await TokenService.SaveTokenAsync(result.Token);
+
+                    // Set the token in HttpClient for subsequent requests
+                    Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
+
+                    message = "Login successful!";
+                }
+                else
+                {
+                    message = "Error: Token not received.";
+                }
+            }
+            else
+            {
+                message = "Login failed. Invalid credentials.";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+
+    private class LoginModel
+    {
+        public string UserName { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+
+    private class LoginResponse
+    {
+        public string Token { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    .login-container {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+        .login-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .login-container div {
+            margin-bottom: 15px;
+        }
+
+        .login-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .login-container input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .login-container button:hover {
+                background-color: #45a049;
+            }
+
+        .login-container p {
+            color: red;
+            text-align: center;
+        }
+</style>

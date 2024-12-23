@@ -1,4 +1,6 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using MAUI.Services;
+using Microsoft.Extensions.Logging;
+using RCL.Data.Interfaces;
 
 namespace MAUI
 {
@@ -19,8 +21,10 @@ namespace MAUI
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") }); // Backend base URL
 
 #if DEBUG
-            builder.Services.AddBlazorWebViewDeveloperTools();
-    		builder.Logging.AddDebug();
+            builder.Services.AddBlazorWebViewDeveloperTools(); 
+            builder.Services.AddSingleton<ITokenService, MobileTokenService>();
+
+            builder.Logging.AddDebug();
 #endif
 
             return builder.Build();

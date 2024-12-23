@@ -1,0 +1,117 @@
+﻿@page "/register"
+@inject HttpClient Http
+
+<div class="register-container">
+    <h2>Register</h2>
+    <p>@message</p>
+    <form @onsubmit="HandleRegister">
+        <div>
+            <label for="name">Name:</label>
+            <input id="name" @bind="registerModel.Name" />
+        </div>
+        <div>
+            <label for="surname">Surname:</label>
+            <input id="surname" @bind="registerModel.Surname" />
+        </div>
+        <div>
+            <label for="email">Email:</label>
+            <input id="email" type="email" @bind="registerModel.Email" />
+        </div>
+        <div>
+            <label for="password">Password:</label>
+            <input id="password" type="password" @bind="registerModel.Password" />
+        </div>
+        <button type="submit">Register</button>
+    </form>
+</div>
+
+@code {
+    private RegisterModel registerModel = new();
+    private string message = string.Empty;
+
+    private async Task HandleRegister()
+    {
+        message = string.Empty;
+
+        try
+        {
+            // Send registration data to the API
+            var response = await Http.PostAsJsonAsync("api/auth/register", registerModel);
+
+            if (response.IsSuccessStatusCode)
+            {
+                message = "Registration successful! You can now log in.";
+            }
+            else
+            {
+                var errorContent = await response.Content.ReadAsStringAsync();
+                message = $"Registration failed: {errorContent}";
+            }
+        }
+        catch (Exception ex)
+        {
+            message = $"Error: {ex.Message}";
+        }
+    }
+
+    private class RegisterModel
+    {
+        public string Name { get; set; } = string.Empty;
+        public string Surname { get; set; } = string.Empty;
+        public string Email { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+    }
+}
+
+<style>
+    .register-container {
+        max-width: 400px;
+        margin: 20px auto;
+        padding: 20px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        background-color: #f9f9f9;
+    }
+
+        .register-container h2 {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .register-container div {
+            margin-bottom: 15px;
+        }
+
+        .register-container label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .register-container input {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .register-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+            .register-container button:hover {
+                background-color: #45a049;
+            }
+
+        .register-container p {
+            color: red;
+            text-align: center;
+        }
+</style>

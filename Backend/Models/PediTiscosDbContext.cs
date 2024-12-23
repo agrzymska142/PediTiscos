@@ -1,11 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using Backend.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
-namespace Backend.Repositories;
+namespace Backend.Models;
 
 public partial class PediTiscosDbContext : IdentityDbContext<ApplicationUser>
 {

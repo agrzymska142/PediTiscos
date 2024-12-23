@@ -1,6 +1,6 @@
 ﻿using Backend.Dtos;
 using Backend.Models;
-using Backend.Repositories;
+using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 

@@ -14,11 +14,13 @@ namespace Backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> _userManager;
+        private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IConfiguration _configuration;
 
-        public AuthController(UserManager<ApplicationUser> userManager, IConfiguration configuration)
+        public AuthController(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration)
         {
             _userManager = userManager;
+            _roleManager = roleManager;
             _configuration = configuration;
         }
 
@@ -33,6 +35,42 @@ namespace Backend.Controllers
 
             var token = GenerateJwtToken(user);
             return Ok(new { Token = token });
+        }
+
+        [HttpPost("register")]
+        public async Task<IActionResult> Register([FromBody] RegisterDto registerDto)
+        {
+            var existingUser = await _userManager.FindByEmailAsync(registerDto.Email);
+            if (existingUser != null)
+            {
+                return BadRequest("User with this email already exists.");
+            }
+
+            var newUser = new ApplicationUser
+            {
+                UserName = registerDto.Email,
+                Email = registerDto.Email,
+                Name = registerDto.Name,
+                Surname = registerDto.Surname,
+                Status = 0
+            };
+
+            var result = await _userManager.CreateAsync(newUser, registerDto.Password);
+            if (!result.Succeeded)
+            {
+                return BadRequest(result.Errors);
+            }
+
+            // Ensure the "Customer" role exists
+            if (!await _roleManager.RoleExistsAsync("Customer"))
+            {
+                await _roleManager.CreateAsync(new IdentityRole("Customer"));
+            }
+
+            // Assign the "Customer" role to the user
+            await _userManager.AddToRoleAsync(newUser, "Customer");
+
+            return Ok("User registered successfully.");
         }
 
         private string GenerateJwtToken(ApplicationUser user)
@@ -62,6 +100,14 @@ namespace Backend.Controllers
     public class LoginDto
     {
         public string UserName { get; set; }
+        public string Password { get; set; }
+    }
+
+    public class RegisterDto
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public string Email { get; set; }
         public string Password { get; set; }
     }
 }
