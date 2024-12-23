@@ -1,4 +1,5 @@
 ﻿@inject HttpClient Http
+<link href="_content/RCL/featured.css" rel="stylesheet" />
 
 <div class="featured-card">
     @if (featuredProduct == null)
@@ -19,40 +20,6 @@
         </div>
     }
 </div>
-
-<style>
-    .featured-card {
-        display: flex;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    .card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        width: 300px;
-        text-align: center;
-    }
-
-    .card-header {
-        background-color: #f8f9fa;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        border-radius: 8px 8px 0 0;
-    }
-
-        .card-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-    .card-body p {
-        margin: 5px 0;
-    }
-</style>
 
 @code {
     private FeaturedProduct featuredProduct;

@@ -3,16 +3,16 @@
 @using System.Net.Http.Json
 @using RCL.Data.DTO
 
+<link href="_content/RCL/categories.css" rel="stylesheet" />
 
 <nav class="nav-menu">
-
     @if (categories == null)
     {
         <p>Loading categories...</p>
     }
     else if (categories.Count == 0)
     {
-        <p>No categories available.</p>
+        <p>No categories found.</p>
     }
     else
     {
@@ -21,7 +21,7 @@
             {
                 <div class="category-card">
                     <a href="products/@category.CategoryId" class="category-link">
-                        <img src="https://via.placeholder.com/150" alt="@category.Name" class="category-image" />
+                        <img src="https://via.placeholder.com/250" alt="@category.Name" class="category-image" />
                         <div class="category-name">@category.Name</div>
                         <div class="category-description">@category.Description</div>
                     </a>
@@ -42,73 +42,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error fetching categories: {ex.Message}");
+            Console.WriteLine($"Błąd podczas pobierania kategorii: {ex.Message}");
         }
     }
 }
-
-<style>
-    .nav-menu {
-        padding: 10px;
-        background-color: #FFF8E1;
-        color: white;
-    }
-
-    .top-bar {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .logo {
-        max-height: 40px;
-    }
-
-    h3 {
-        margin: 0;
-    }
-
-    .categories-container {
-        display: flex;
-        flex-wrap: nowrap;
-        overflow-x: scroll;
-        white-space: nowrap;
-        padding: 10px;
-        margin-top: 10px;
-        width: 100%; /* Use percentage to fill the parent */
-        max-width: 1000px; /* Limit to prevent stretching */
-        margin: 0 auto; /* Center the container */
-    }
-
-    .category-card {
-        background-color: white;
-        color: #333;
-        border: 1px solid #ddd;
-        border-radius: 5px;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
-        margin-right: 10px;
-        padding: 10px;
-        width: 200px;
-        text-align: center;
-        transition: transform 0.2s ease-in-out;
-    }
-
-        .category-card:hover {
-            transform: scale(1.05);
-            box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.2);
-        }
-
-    .category-name {
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .category-description {
-        font-size: 0.9rem;
-    }
-
-    .category-link {
-        text-decoration: none;
-        color: inherit;
-    }
-</style>

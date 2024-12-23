@@ -3,46 +3,7 @@
 @using System.Net.Http.Json
 @using RCL.Data.DTO
 
-<style>
-    .product-container {
-        display: flex;
-        justify-content: center;
-        margin: 20px 0;
-    }
-
-    .product-card {
-        background-color: #fff;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        padding: 15px;
-        width: 300px;
-        text-align: center;
-    }
-
-    .product-card-header {
-        background-color: #f8f9fa;
-        padding: 10px;
-        border-bottom: 1px solid #ddd;
-        border-radius: 8px 8px 0 0;
-    }
-
-        .product-card-header h3 {
-            margin: 0;
-            font-size: 1.25rem;
-        }
-
-    .product-card-body p {
-        margin: 5px 0;
-    }
-
-    .loading-message {
-        text-align: center;
-        padding: 20px;
-        font-size: 1.25rem;
-        color: #777;
-    }
-</style>
+<link href="_content/RCL/product-detail.css" rel="stylesheet" />
 
 <div class="product-container">
     @if (product == null)
@@ -56,10 +17,10 @@
                 <h3>@product.Name</h3>
             </div>
             <div class="product-card-body">
-                <img src="https://via.placeholder.com/300" alt="@product.Name" />
-                <p>@product.Description</p>
-                <p><strong>Price:</strong> @product.Price.ToString("C")</p>
-                <p><strong>Stock:</strong> @product.Stock</p>
+                <img src="https://via.placeholder.com/300" alt="@product.Name" class="product-image" />
+                <p class="product-description">@product.Description</p>
+                <p class="product-price"><strong>Price:</strong> @product.Price.ToString("C")</p>
+                <p class="product-stock"><strong>Stock:</strong> @product.Stock</p>
             </div>
         </div>
     }
@@ -84,3 +45,5 @@
         }
     }
 }
+
+

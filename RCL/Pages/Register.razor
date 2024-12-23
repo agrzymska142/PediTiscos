@@ -1,23 +1,37 @@
 ﻿@page "/register"
 @inject HttpClient Http
 
+<link href="_content/RCL/register.css" rel="stylesheet" />
+
 <div class="register-container">
     <h2>Register</h2>
-    <p>@message</p>
+    @if (errors.Any())
+    {
+        <ul class="error-messages">
+            @foreach (var error in errors)
+            {
+                <li>@error</li>
+            }
+        </ul>
+    }
+    @if (!string.IsNullOrEmpty(message))
+    {
+        <p class="message">@message</p>
+    }
     <form @onsubmit="HandleRegister">
-        <div>
+        <div class="form-group">
             <label for="name">Name:</label>
             <input id="name" @bind="registerModel.Name" />
         </div>
-        <div>
+        <div class="form-group">
             <label for="surname">Surname:</label>
             <input id="surname" @bind="registerModel.Surname" />
         </div>
-        <div>
+        <div class="form-group">
             <label for="email">Email:</label>
             <input id="email" type="email" @bind="registerModel.Email" />
         </div>
-        <div>
+        <div class="form-group">
             <label for="password">Password:</label>
             <input id="password" type="password" @bind="registerModel.Password" />
         </div>
@@ -28,10 +42,12 @@
 @code {
     private RegisterModel registerModel = new();
     private string message = string.Empty;
+    private List<string> errors = new();
 
     private async Task HandleRegister()
     {
         message = string.Empty;
+        errors.Clear();
 
         try
         {
@@ -45,7 +61,15 @@
             else
             {
                 var errorContent = await response.Content.ReadAsStringAsync();
-                message = $"Registration failed: {errorContent}";
+                var errorList = System.Text.Json.JsonSerializer.Deserialize<List<ErrorDetail>>(errorContent);
+                if (errorList != null)
+                {
+                    errors.AddRange(errorList.Select(e => e.Description));
+                }
+                else
+                {
+                    message = $"Registration failed: {errorContent}";
+                }
             }
         }
         catch (Exception ex)
@@ -61,57 +85,12 @@
         public string Email { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
     }
+
+    private class ErrorDetail
+    {
+        public string Code { get; set; }
+        public string Description { get; set; }
+    }
 }
 
-<style>
-    .register-container {
-        max-width: 400px;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-    }
 
-        .register-container h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .register-container div {
-            margin-bottom: 15px;
-        }
-
-        .register-container label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .register-container input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .register-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-            .register-container button:hover {
-                background-color: #45a049;
-            }
-
-        .register-container p {
-            color: red;
-            text-align: center;
-        }
-</style>

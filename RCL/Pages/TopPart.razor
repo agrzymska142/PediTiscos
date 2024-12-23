@@ -1,44 +1,16 @@
-﻿<div class="top-bar">
+﻿@* Style import *@
+<link href="_content/RCL/top-part.css" rel="stylesheet" />
+<div class="top-bar">
     <div class="logo">
-		<span href="/">PediTiscos</span>
-		<a href="/products">All products</a>
-		<a href="#">About</a>
-		<a href="#">Contact</a>
+        <a href="/">PediTiscos</a>
     </div>
-    <div class="navigation">
+    <nav class="navigation">
+        <a href="/products">Products</a>
+        <a href="#">About us</a>
+        <a href="#">Contact</a>
         <a href="/cart">Cart</a>
-        <a href="/login">Log in</a>
+        <a href="/login">Login</a>
         <a href="/register">Register</a>
-    </div>
-    
+    </nav>
 </div>
 
-<style>
-    .top-bar {
-        background-color: #00AEEF; /* Light blue color */
-        color: white;
-        height: 60px;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        padding: 0 20px;
-        box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.2);
-        font-family: Arial, sans-serif;
-    }
-
-        .top-bar .logo {
-            font-size: 1.5rem;
-            font-weight: bold;
-        }
-
-        .top-bar .navigation a {
-            color: white;
-            text-decoration: none;
-            margin-left: 15px;
-            font-size: 1rem;
-        }
-
-            .top-bar .navigation a:hover {
-                text-decoration: underline;
-            }
-</style>

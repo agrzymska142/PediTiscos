@@ -4,51 +4,74 @@
 @using Blazored.LocalStorage
 @inject ILocalStorageService LocalStorage
 
-<h3>Your Cart</h3>
+<link href="_content/RCL/cart.css" rel="stylesheet" />
 
-@if (cartItems == null)
-{
-    <p>Loading...</p>
-}
-else if (!cartItems.Any())
-{
-    <p>Your cart is empty.</p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-                <th>Description</th>
-                <th>Price</th>
-                <th>Quantity</th>
-                <th>Total Price</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var item in cartItems)
-            {
+<div class="cart-container">
+    <h3>Your cart</h3>
+
+    @if (cartItems == null)
+    {
+        <p>Loading...</p>
+    }
+    else if (!cartItems.Any())
+    {
+        <p>Your cart is empty.</p>
+    }
+    else
+    {
+        <table class="table">
+            <thead>
                 <tr>
-                    <td>@item.Name</td>
-                    <td>@item.Description</td>
-                    <td>@item.Price</td>
-                    <td>@item.Quantity</td>
-                    <td>@(item.Price * item.Quantity)</td>
+                    <th>Name</th>
+                    <th>Description</th>
+                    <th>Pice per unit</th>
+                    <th>Ammount</th>
+                    <th>Combined price</th>
                 </tr>
-            }
-        </tbody>
-    </table>
-}
+            </thead>
+            <tbody>
+                @foreach (var item in cartItems)
+                {
+                    <tr>
+                        <td>@item.Name</td>
+                        <td>@item.Description</td>
+                        <td>@item.Price.ToString("C")</td>
+                        <td>@item.Quantity</td>
+                        <td>@(item.Price * item.Quantity).ToString("C")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+</div>
 
 @code {
     private List<CartItemDto> cartItems;
 
     protected override async Task OnInitializedAsync()
     {
-        cartItems = await Http.GetFromJsonAsync<List<CartItemDto>>("api/products/cart");
-        await LocalStorage.SetItemAsync("cartItems", cartItems);
+        try
+        {
+            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/products/cart");
+            request.Headers.Add("sessionId", sessionId);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                cartItems = await response.Content.ReadFromJsonAsync<List<CartItemDto>>();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Błąd podczas pobierania przedmiotów z koszyka: {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Wystąpił wyjątek: {ex.Message}");
+        }
     }
 }
 
-                    

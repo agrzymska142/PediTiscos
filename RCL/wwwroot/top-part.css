@@ -1,0 +1,64 @@
+.top-bar {
+    background-color: #00AEEF;
+    color: white;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    font-family: Arial, sans-serif;
+}
+
+    .top-bar .logo a {
+        font-size: 1.8rem;
+        font-weight: bold;
+        color: white;
+        text-decoration: none;
+    }
+
+    .top-bar .navigation {
+        display: flex;
+        align-items: center;
+    }
+
+        .top-bar .navigation a {
+            color: white;
+            text-decoration: none;
+            margin-left: 20px;
+            font-size: 1rem;
+            position: relative;
+        }
+
+            .top-bar .navigation a::after {
+                content: '';
+                display: block;
+                width: 0;
+                height: 2px;
+                background: white;
+                transition: width .3s;
+                position: absolute;
+                bottom: -5px;
+                left: 0;
+            }
+
+            .top-bar .navigation a:hover::after {
+                width: 100%;
+            }
+
+@media screen and (max-width: 768px) {
+    .top-bar {
+        flex-direction: column;
+        height: auto;
+        padding: 10px;
+    }
+
+        .top-bar .navigation {
+            flex-direction: column;
+            margin-top: 10px;
+        }
+
+            .top-bar .navigation a {
+                margin: 5px 0;
+            }
+}

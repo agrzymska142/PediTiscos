@@ -162,7 +162,8 @@ public class ProductsController : ControllerBase
     [HttpGet("cart")]
     public async Task<IActionResult> GetCartItems()
     {
-        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : HttpContext.Session.Id;
+        var sessionId = Request.Headers["sessionId"].ToString();
+        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
 
         var cartItems = await _context.CartItems
             .Where(ci => ci.UserIdentifier == userIdentifier)
