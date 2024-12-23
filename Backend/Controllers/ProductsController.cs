@@ -183,19 +183,54 @@ public class ProductsController : ControllerBase
         return Ok(cartItemDtos);
     }
 
-    [HttpGet("test-session")]
-    public IActionResult TestSession()
+    [HttpPut("UpdateCartItem")]
+    public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemDto updateCartItemDto)
     {
-        if (HttpContext.Session.GetString("Test") == null)
+        var sessionId = Request.Headers["sessionId"].ToString();
+        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+
+        var cartItem = await _context.CartItems
+            .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == updateCartItemDto.ProductId);
+
+        if (cartItem == null)
+            return NotFound($"Cart item with Product ID {updateCartItemDto.ProductId} not found.");
+
+        if (updateCartItemDto.Quantity <= 0)
+            return BadRequest("Quantity must be greater than 0.");
+
+        cartItem.Quantity = updateCartItemDto.Quantity;
+        await _context.SaveChangesAsync();
+
+        return Ok(new
         {
-            HttpContext.Session.SetString("Test", "Session is working");
-            return Ok("Session initialized");
-        }
-        else
+            Message = "Cart item updated.",
+            CartItemId = cartItem.CartItemId,
+            ProductId = cartItem.ProductId,
+            Quantity = cartItem.Quantity
+        });
+    }
+
+    [HttpDelete("RemoveFromCart/{productId}")]
+    public async Task<IActionResult> RemoveFromCart(int productId)
+    {
+        var sessionId = Request.Headers["sessionId"].ToString();
+        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+
+        var cartItem = await _context.CartItems
+            .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == productId);
+
+        if (cartItem == null)
+            return NotFound($"Cart item with Product ID {productId} not found.");
+
+        _context.CartItems.Remove(cartItem);
+        await _context.SaveChangesAsync();
+
+        return Ok(new
         {
-            var value = HttpContext.Session.GetString("Test");
-            return Ok($"Session value: {value}");
-        }
+            Message = "Cart item removed.",
+            CartItemId = cartItem.CartItemId,
+            ProductId = cartItem.ProductId
+        });
     }
 
 
