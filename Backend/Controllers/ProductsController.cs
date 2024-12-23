@@ -1,4 +1,5 @@
 ﻿using Backend.Dtos;
+using Backend.Models;
 using Backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -102,4 +103,101 @@ public class ProductsController : ControllerBase
 
         return Ok(productDto);
     }
+
+
+    [HttpPost("AddToCart")]
+    public async Task<IActionResult> AddToCart([FromBody] AddToCartDto addToCartDto)
+    {
+        // Validate input
+        if (addToCartDto.Quantity <= 0)
+            return BadRequest("Quantity must be greater than 0.");
+
+        var product = await _context.Products.FindAsync(addToCartDto.ProductId);
+        if (product == null)
+            return NotFound($"Product with ID {addToCartDto.ProductId} not found.");
+
+        if (product.Stock < addToCartDto.Quantity)
+            return BadRequest("Not enough stock available.");
+
+        // Get user identifier
+        var sessionId = Request.Headers["sessionId"].ToString();
+        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+
+
+        // Check if the product is already in the cart
+        var cartItem = await _context.CartItems
+            .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == addToCartDto.ProductId);
+
+        if (cartItem == null)
+        {
+            // Add new item to the cart
+            cartItem = new CartItem
+            {
+                UserIdentifier = userIdentifier,
+                ProductId = addToCartDto.ProductId,
+                Quantity = addToCartDto.Quantity,
+                Product = product
+            };
+            _context.CartItems.Add(cartItem);
+        }
+        else
+        {
+            // Update quantity
+            cartItem.Quantity += addToCartDto.Quantity;
+        }
+
+        await _context.SaveChangesAsync();
+
+        return Ok(new
+        {
+            Message = "Product added to cart.",
+            CartItemId = cartItem.CartItemId,
+            ProductId = cartItem.ProductId,
+            Quantity = cartItem.Quantity
+        });
+    }
+
+
+
+    [HttpGet("cart")]
+    public async Task<IActionResult> GetCartItems()
+    {
+        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : HttpContext.Session.Id;
+
+        var cartItems = await _context.CartItems
+            .Where(ci => ci.UserIdentifier == userIdentifier)
+            .Include(ci => ci.Product)
+            .ToListAsync();
+
+        var cartItemDtos = cartItems.Select(ci => new CartItemDto
+        {
+            CartItemId = ci.CartItemId,
+            ProductId = ci.ProductId,
+            Name = ci.Product.Name,
+            Description = ci.Product.Description,
+            Price = ci.Product.Price,
+            Quantity = ci.Quantity
+        }).ToList();
+
+        return Ok(cartItemDtos);
+    }
+
+    [HttpGet("test-session")]
+    public IActionResult TestSession()
+    {
+        if (HttpContext.Session.GetString("Test") == null)
+        {
+            HttpContext.Session.SetString("Test", "Session is working");
+            return Ok("Session initialized");
+        }
+        else
+        {
+            var value = HttpContext.Session.GetString("Test");
+            return Ok($"Session value: {value}");
+        }
+    }
+
+
+
+
 }

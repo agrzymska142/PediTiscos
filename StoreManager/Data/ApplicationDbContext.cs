@@ -21,6 +21,8 @@ namespace StoreManager.Data
         public DbSet<IdentityUserRole<string>> UserRoles { get; set; }
         public DbSet<IdentityRole> Roles { get; set; }
 
+        public DbSet<CartItem> CartItems { get; set; }
+
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {

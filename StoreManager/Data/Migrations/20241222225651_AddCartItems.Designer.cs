@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using StoreManager.Data;
 
@@ -11,9 +12,11 @@ using StoreManager.Data;
 namespace StoreManager.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20241222225651_AddCartItems")]
+    partial class AddCartItems
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -231,31 +234,6 @@ namespace StoreManager.Migrations
                     b.ToTable("AspNetUsers", (string)null);
                 });
 
-            modelBuilder.Entity("StoreManager.Data.Models.CartItem", b =>
-                {
-                    b.Property<int>("CartItemId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CartItemId"));
-
-                    b.Property<int>("ProductId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.Property<string>("UserIdentifier")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("CartItemId");
-
-                    b.HasIndex("ProductId");
-
-                    b.ToTable("CartItems");
-                });
-
             modelBuilder.Entity("StoreManager.Data.Models.Category", b =>
                 {
                     b.Property<int>("CategoryId")
@@ -327,7 +305,7 @@ namespace StoreManager.Migrations
                             OrderId = 1,
                             ClientEmail = "johndoe@example.com",
                             ClientName = "John Doe",
-                            OrderDate = new DateTime(2024, 12, 21, 23, 59, 31, 136, DateTimeKind.Local).AddTicks(7542),
+                            OrderDate = new DateTime(2024, 12, 21, 23, 56, 50, 621, DateTimeKind.Local).AddTicks(7415),
                             Status = "Pending",
                             TotalAmount = 7.5m
                         },
@@ -336,7 +314,7 @@ namespace StoreManager.Migrations
                             OrderId = 2,
                             ClientEmail = "janesmith@example.com",
                             ClientName = "Jane Smith",
-                            OrderDate = new DateTime(2024, 12, 20, 23, 59, 31, 136, DateTimeKind.Local).AddTicks(8509),
+                            OrderDate = new DateTime(2024, 12, 20, 23, 56, 50, 621, DateTimeKind.Local).AddTicks(8439),
                             Status = "Confirmed",
                             TotalAmount = 3.0m
                         });
@@ -499,17 +477,6 @@ namespace StoreManager.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("StoreManager.Data.Models.CartItem", b =>
-                {
-                    b.HasOne("StoreManager.Data.Models.Product", "Product")
-                        .WithMany()
-                        .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Product");
                 });
 
             modelBuilder.Entity("StoreManager.Data.Models.OrderDetail", b =>

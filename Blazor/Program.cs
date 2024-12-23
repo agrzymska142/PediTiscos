@@ -1,4 +1,6 @@
 using Blazor.Components;
+using Blazored.LocalStorage;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -7,7 +9,8 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") }); // Backend base URL
-
+// Add Blazored LocalStorage
+builder.Services.AddBlazoredLocalStorage();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.

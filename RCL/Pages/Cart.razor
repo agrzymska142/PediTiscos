@@ -1,0 +1,54 @@
+﻿@page "/cart"
+@inject HttpClient Http
+@using RCL.Data.DTO
+@using Blazored.LocalStorage
+@inject ILocalStorageService LocalStorage
+
+<h3>Your Cart</h3>
+
+@if (cartItems == null)
+{
+    <p>Loading...</p>
+}
+else if (!cartItems.Any())
+{
+    <p>Your cart is empty.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total Price</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in cartItems)
+            {
+                <tr>
+                    <td>@item.Name</td>
+                    <td>@item.Description</td>
+                    <td>@item.Price</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Price * item.Quantity)</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<CartItemDto> cartItems;
+
+    protected override async Task OnInitializedAsync()
+    {
+        cartItems = await Http.GetFromJsonAsync<List<CartItemDto>>("api/products/cart");
+        await LocalStorage.SetItemAsync("cartItems", cartItems);
+    }
+}
+
+                    
