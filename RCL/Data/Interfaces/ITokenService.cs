@@ -11,5 +11,7 @@ namespace RCL.Data.Interfaces
         Task SaveTokenAsync(string token);
         Task<string> GetTokenAsync();
         Task ClearTokenAsync();
+
+        Task<string> GetUsernameAsync();
     }
 }

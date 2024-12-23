@@ -1,6 +1,7 @@
 ﻿@page "/login"
 @inject HttpClient Http
 @inject ITokenService TokenService
+@inject NavigationManager Navigation
 @using RCL.Data.Interfaces
 @using System.Net.Http.Headers
 @using System.Net.Http.Json
@@ -46,6 +47,7 @@
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
 
                     message = "Login successful!";
+                    Navigation.NavigateTo("/");
                 }
                 else
                 {

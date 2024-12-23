@@ -7,6 +7,14 @@
 
 <link href="_content/RCL/product.css" rel="stylesheet" />
 <nav class="nav-menu">
+    <div class="search-filter">
+        <input type="text" placeholder="Search products..." @bind="searchTerm" class="search-input" />
+        <button @onclick="ApplyFilters" class="search-button">Search</button>
+        <label class="available-label">
+            <input type="checkbox" @bind="onlyAvailable" class="available-checkbox" />
+            Only available
+        </label>
+    </div>
 
     @if (products == null)
     {
@@ -35,35 +43,39 @@
                     </div>
                     <button @onclick="() => AddToCart(product)" class="add-to-cart-button">Add to cart</button>
                 </div>
-
-                
             }
         </div>
     }
 </nav>
 
 @code {
-    
-    private int quantity = 1;
-
-    private List<ProductDTO> products;
+    private List<ProductDTO> products = new();
+    private string searchTerm = string.Empty;
+    private bool onlyAvailable = false;
 
     [Parameter]
     public int? CategoryId { get; set; }
 
     protected override async Task OnParametersSetAsync()
     {
+        await LoadProducts();
+    }
+
+    private async Task LoadProducts()
+    {
         try
         {
             Console.WriteLine($"Fetching products for category {CategoryId}");
-            if (CategoryId.HasValue)
+            var query = $"api/Products?categoryId={CategoryId}";
+            if (!string.IsNullOrEmpty(searchTerm))
             {
-                products = await Http.GetFromJsonAsync<List<ProductDTO>>($"api/Products?categoryId={CategoryId.Value}");
+                query += $"&search={searchTerm}";
             }
-            else
+            if (onlyAvailable)
             {
-                products = await Http.GetFromJsonAsync<List<ProductDTO>>("api/Products");
+                query += $"&available={onlyAvailable}";
             }
+            products = await Http.GetFromJsonAsync<List<ProductDTO>>(query);
 
             var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
             if (string.IsNullOrEmpty(sessionId))
@@ -78,12 +90,17 @@
         }
     }
 
+    private async Task ApplyFilters()
+    {
+        await LoadProducts();
+    }
+
     private async Task AddToCart(ProductDTO product)
     {
         try
         {
             var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
-			Console.WriteLine(sessionId);
+            Console.WriteLine(sessionId);
 
             var addToCartDto = new AddToCartDto
                 {
@@ -118,7 +135,13 @@
             // Optionally display an error notification to the user
         }
     }
-    
 }
+
+
+
+
+
+
+
 
 

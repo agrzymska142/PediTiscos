@@ -1,6 +1,5 @@
 ﻿using Backend.Dtos;
 using Backend.Models;
-using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
@@ -104,7 +103,6 @@ public class ProductsController : ControllerBase
         return Ok(productDto);
     }
 
-
     [HttpPost("AddToCart")]
     public async Task<IActionResult> AddToCart([FromBody] AddToCartDto addToCartDto)
     {
@@ -122,7 +120,6 @@ public class ProductsController : ControllerBase
         // Get user identifier
         var sessionId = Request.Headers["sessionId"].ToString();
         var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
-
 
         // Check if the product is already in the cart
         var cartItem = await _context.CartItems
@@ -156,8 +153,6 @@ public class ProductsController : ControllerBase
             Quantity = cartItem.Quantity
         });
     }
-
-
 
     [HttpGet("cart")]
     public async Task<IActionResult> GetCartItems()
@@ -232,8 +227,7 @@ public class ProductsController : ControllerBase
             ProductId = cartItem.ProductId
         });
     }
-
-
-
-
 }
+
+
+

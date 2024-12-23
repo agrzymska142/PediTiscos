@@ -4,6 +4,46 @@
     color: #333;
 }
 
+.search-filter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.search-input {
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    width: 200px;
+}
+
+.search-button {
+    padding: 10px 20px;
+    background-color: #00AEEF;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+    .search-button:hover {
+        background-color: #008CBA;
+    }
+
+.available-label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.available-checkbox {
+    width: 20px;
+    height: 20px;
+}
+
 .products-container {
     display: flex;
     flex-wrap: wrap;

@@ -1,4 +1,9 @@
-﻿@* Style import *@
+﻿@using RCL.Data.Interfaces
+@inject HttpClient Http
+@inject ITokenService TokenService
+@inject NavigationManager Navigation
+
+@* Style import *@
 <link href="_content/RCL/top-part.css" rel="stylesheet" />
 <div class="top-bar">
     <div class="logo">
@@ -9,8 +14,41 @@
         <a href="#">About us</a>
         <a href="#">Contact</a>
         <a href="/cart">Cart</a>
-        <a href="/login">Login</a>
-        <a href="/register">Register</a>
+        @if (string.IsNullOrEmpty(username))
+        {
+            <a href="/login">Login</a>
+            <a href="/register">Register</a>
+        }
+        else
+        {
+            <span>Welcome, @username</span>
+        }
     </nav>
+    <div class="search-bar">
+        <input type="text" placeholder="Search products..." @bind="searchTerm" />
+        <button @onclick="SearchProducts">Search</button>
+    </div>
 </div>
+
+@code {
+    private string username;
+    private string searchTerm = string.Empty;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            username = await TokenService.GetUsernameAsync();
+            StateHasChanged();
+        }
+    }
+
+    private void SearchProducts()
+    {
+        Navigation.NavigateTo($"/products?search={searchTerm}");
+    }
+}
+
+
+
 
