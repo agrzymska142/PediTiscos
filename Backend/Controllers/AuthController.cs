@@ -83,7 +83,9 @@ namespace Backend.Controllers
             {
                 new Claim(JwtRegisteredClaimNames.Sub, user.UserName),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.NameIdentifier, user.Id)
+                new Claim(ClaimTypes.NameIdentifier, user.Id),
+                new Claim("name", user.Name),
+                new Claim("surname", user.Surname)
             };
 
             var token = new JwtSecurityToken(
@@ -95,6 +97,7 @@ namespace Backend.Controllers
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 
     public class LoginDto

@@ -8,10 +8,11 @@ namespace RCL.Data.Interfaces
 {
     public interface ITokenService
     {
-        Task SaveTokenAsync(string token);
-        Task<string> GetTokenAsync();
-        Task ClearTokenAsync();
-
-        Task<string> GetUsernameAsync();
+        ValueTask SaveTokenAsync(string token);
+        ValueTask<string> GetTokenAsync();
+        ValueTask<string> GetUsernameAsync();
+        ValueTask<string> GetFullNameAsync();
+        ValueTask ClearTokenAsync();
+        event Func<Task> OnUserLoggedIn;
     }
 }

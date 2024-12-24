@@ -1,10 +1,9 @@
 ﻿@using RCL.Data.Interfaces
-@inject HttpClient Http
 @inject ITokenService TokenService
 @inject NavigationManager Navigation
 
-@* Style import *@
 <link href="_content/RCL/top-part.css" rel="stylesheet" />
+
 <div class="top-bar">
     <div class="logo">
         <a href="/">PediTiscos</a>
@@ -14,14 +13,15 @@
         <a href="#">About us</a>
         <a href="#">Contact</a>
         <a href="/cart">Cart</a>
-        @if (string.IsNullOrEmpty(username))
+        @if (string.IsNullOrEmpty(fullName))
         {
             <a href="/login">Login</a>
             <a href="/register">Register</a>
         }
         else
         {
-            <span>Welcome, @username</span>
+            <a>Welcome, @fullName</a>
+            <a href="#" @onclick="Logout">Logout</a>
         }
     </nav>
     <div class="search-bar">
@@ -31,24 +31,48 @@
 </div>
 
 @code {
-    private string username;
+    private string fullName;
     private string searchTerm = string.Empty;
+    private bool isInitialized;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        if (firstRender)
+        if (firstRender && !isInitialized)
         {
-            username = await TokenService.GetUsernameAsync();
+            // Subscribe to TokenService changes
+            TokenService.OnUserLoggedIn += HandleUserLoggedIn;
+
+            // Initialize fullName if the user is already logged in
+            fullName = await TokenService.GetFullNameAsync();
+
+            isInitialized = true; // Ensure initialization only happens once
             StateHasChanged();
         }
+    }
+
+    private async Task HandleUserLoggedIn()
+    {
+        fullName = await TokenService.GetFullNameAsync();
+        StateHasChanged();
+    }
+
+    private async Task Logout()
+    {
+        await TokenService.ClearTokenAsync(); // Clear the stored token
+        fullName = null; // Reset the user's full name
+        StateHasChanged();
+        Navigation.NavigateTo("/login"); // Redirect to the login page
     }
 
     private void SearchProducts()
     {
         Navigation.NavigateTo($"/products?search={searchTerm}");
     }
+
+    public void Dispose()
+    {
+        // Unsubscribe from the event when the component is disposed
+        TokenService.OnUserLoggedIn -= HandleUserLoggedIn;
+    }
 }
-
-
-
 
