@@ -224,4 +224,66 @@ public class ProductsController : ControllerBase
             ProductId = cartItem.ProductId
         });
     }
+
+    [HttpPost("PlaceOrder")]
+    public async Task<IActionResult> PlaceOrder()
+    {
+        // Sprawdź, czy użytkownik jest zalogowany
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized("User must be logged in to place an order.");
+        }
+
+        // Pobierz identyfikator użytkownika
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        var userName = User.FindFirst("name")?.Value;
+        var userSurname = User.FindFirst("surname")?.Value;
+        var userEmail = User.FindFirst(ClaimTypes.Email)?.Value;
+
+        if (string.IsNullOrEmpty(userEmail))
+        {
+            return BadRequest("User email is required to place an order.");
+        }
+
+        // Pobierz produkty z koszyka użytkownika
+        var cartItems = await _context.CartItems
+            .Where(ci => ci.UserIdentifier == userId)
+            .Include(ci => ci.Product)
+            .ToListAsync();
+
+        if (!cartItems.Any())
+        {
+            return BadRequest("Cart is empty.");
+        }
+
+        // Oblicz całkowitą kwotę zamówienia
+        var totalAmount = cartItems.Sum(ci => ci.Product.Price * ci.Quantity);
+
+        // Utwórz nowe zamówienie
+        var order = new Order
+        {
+            OrderDate = DateTime.Now,
+            ClientName = $"{userName} {userSurname}",
+            ClientEmail = userEmail,
+            TotalAmount = totalAmount,
+            Status = "Pending",
+            OrderDetails = cartItems.Select(ci => new OrderDetail
+            {
+                ProductId = ci.ProductId,
+                Quantity = ci.Quantity,
+                UnitPrice = ci.Product.Price
+            }).ToList()
+        };
+
+        _context.Orders.Add(order);
+
+        // Usuń produkty z koszyka
+        _context.CartItems.RemoveRange(cartItems);
+
+        // Zapisz zmiany w bazie danych
+        await _context.SaveChangesAsync();
+
+        return Ok(new { Message = "Order placed successfully.", OrderId = order.OrderId });
+    }
+
 }

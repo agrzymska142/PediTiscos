@@ -51,6 +51,7 @@
                 }
             </tbody>
         </table>
+        <button @onclick="PlaceOrder">Place Order</button>
     }
 </div>
 
@@ -146,6 +147,39 @@
             {
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error removing cart item: {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+
+    private async Task PlaceOrder()
+    {
+        try
+        {
+            var userId = await TokenService.GetUserIdAsync();
+            if (string.IsNullOrEmpty(userId))
+            {
+                Console.WriteLine("User must be logged in to place an order.");
+                return;
+            }
+
+            var request = new HttpRequestMessage(HttpMethod.Post, "api/products/PlaceOrder");
+            request.Headers.Add("sessionId", userId);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                Console.WriteLine("Order placed successfully.");
+                cartItems.Clear();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error placing order: {error}");
             }
         }
         catch (Exception ex)

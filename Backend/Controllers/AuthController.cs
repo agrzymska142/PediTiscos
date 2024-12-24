@@ -85,7 +85,8 @@ namespace Backend.Controllers
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString()),
                 new Claim(ClaimTypes.NameIdentifier, user.Id),
                 new Claim("name", user.Name),
-                new Claim("surname", user.Surname)
+                new Claim("surname", user.Surname),
+                new Claim(ClaimTypes.Email, user.Email) // Dodaj roszczenie email
             };
 
             var token = new JwtSecurityToken(
