@@ -44,6 +44,10 @@ public class WebTokenService : ITokenService
         return await _localStorage.GetItemAsync<string>("username");
     }
 
+    public Task SaveUserIdAsync(string userId) => _localStorage.SetItemAsync("userId", userId).AsTask();
+
+    public Task<string> GetUserIdAsync() => _localStorage.GetItemAsync<string>("userId").AsTask();
+
     public async ValueTask<string> GetFullNameAsync()
     {
         var firstName = await _localStorage.GetItemAsync<string>("firstName");
@@ -54,6 +58,7 @@ public class WebTokenService : ITokenService
     public async ValueTask ClearTokenAsync()
     {
         await _localStorage.RemoveItemAsync("authToken");
+        await _localStorage.RemoveItemAsync("userId");
         await _localStorage.RemoveItemAsync("username");
         await _localStorage.RemoveItemAsync("firstName");
         await _localStorage.RemoveItemAsync("lastName");

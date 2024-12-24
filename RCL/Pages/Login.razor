@@ -40,8 +40,9 @@
                 var result = await response.Content.ReadFromJsonAsync<LoginResponse>();
                 if (result?.Token is not null)
                 {
-                    // Save the token using the token service
+                    // Save the token and userId using the token service
                     await TokenService.SaveTokenAsync(result.Token);
+                    await TokenService.SaveUserIdAsync(result.UserId);
 
                     // Set the token in HttpClient for subsequent requests
                     Http.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", result.Token);
@@ -74,6 +75,7 @@
     private class LoginResponse
     {
         public string Token { get; set; } = string.Empty;
+        public string UserId { get; set; } = string.Empty;
     }
 }
 
@@ -129,3 +131,8 @@
             text-align: center;
         }
 </style>
+
+
+
+
+

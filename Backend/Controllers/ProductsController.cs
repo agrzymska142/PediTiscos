@@ -2,6 +2,7 @@
 using Backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Security.Claims;
 
 namespace Backend.Controllers;
 
@@ -118,8 +119,7 @@ public class ProductsController : ControllerBase
             return BadRequest("Not enough stock available.");
 
         // Get user identifier
-        var sessionId = Request.Headers["sessionId"].ToString();
-        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+        var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
         // Check if the product is already in the cart
         var cartItem = await _context.CartItems
@@ -157,8 +157,7 @@ public class ProductsController : ControllerBase
     [HttpGet("cart")]
     public async Task<IActionResult> GetCartItems()
     {
-        var sessionId = Request.Headers["sessionId"].ToString();
-        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+        var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
         var cartItems = await _context.CartItems
             .Where(ci => ci.UserIdentifier == userIdentifier)
@@ -181,8 +180,7 @@ public class ProductsController : ControllerBase
     [HttpPut("UpdateCartItem")]
     public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemDto updateCartItemDto)
     {
-        var sessionId = Request.Headers["sessionId"].ToString();
-        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+        var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
         var cartItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == updateCartItemDto.ProductId);
@@ -208,8 +206,7 @@ public class ProductsController : ControllerBase
     [HttpDelete("RemoveFromCart/{productId}")]
     public async Task<IActionResult> RemoveFromCart(int productId)
     {
-        var sessionId = Request.Headers["sessionId"].ToString();
-        var userIdentifier = User.Identity.IsAuthenticated ? User.Identity.Name : sessionId;
+        var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
         var cartItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == productId);
@@ -228,6 +225,3 @@ public class ProductsController : ControllerBase
         });
     }
 }
-
-
-

@@ -2,7 +2,9 @@
 @inject HttpClient Http
 @using RCL.Data.DTO
 @using Blazored.LocalStorage
+@using RCL.Data.Interfaces
 @inject ILocalStorageService LocalStorage
+@inject ITokenService TokenService
 
 <link href="_content/RCL/cart.css" rel="stylesheet" />
 
@@ -64,9 +66,12 @@
     {
         try
         {
+            var userId = await TokenService.GetUserIdAsync();
             var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
+
             var request = new HttpRequestMessage(HttpMethod.Get, "api/products/cart");
-            request.Headers.Add("sessionId", sessionId);
+            request.Headers.Add("sessionId", userIdentifier);
 
             var response = await Http.SendAsync(request);
 
@@ -90,7 +95,10 @@
     {
         try
         {
+            var userId = await TokenService.GetUserIdAsync();
             var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
+
             var updateCartItemDto = new UpdateCartItemDto
                 {
                     ProductId = item.ProductId,
@@ -101,7 +109,7 @@
                 {
                     Content = JsonContent.Create(updateCartItemDto)
                 };
-            request.Headers.Add("sessionId", sessionId);
+            request.Headers.Add("sessionId", userIdentifier);
 
             var response = await Http.SendAsync(request);
 
@@ -121,9 +129,12 @@
     {
         try
         {
+            var userId = await TokenService.GetUserIdAsync();
             var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
+
             var request = new HttpRequestMessage(HttpMethod.Delete, $"api/products/RemoveFromCart/{productId}");
-            request.Headers.Add("sessionId", sessionId);
+            request.Headers.Add("sessionId", userIdentifier);
 
             var response = await Http.SendAsync(request);
 
@@ -143,5 +154,3 @@
         }
     }
 }
-
-

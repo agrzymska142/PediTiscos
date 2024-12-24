@@ -34,7 +34,7 @@ namespace Backend.Controllers
             }
 
             var token = GenerateJwtToken(user);
-            return Ok(new { Token = token });
+            return Ok(new { Token = token, UserId = user.Id });
         }
 
         [HttpPost("register")]
