@@ -2,32 +2,32 @@
 @inject ITokenService TokenService
 @inject NavigationManager Navigation
 
-<link href="_content/RCL/top-part.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div class="top-bar">
-    <div class="logo">
+<div class="bg-blue-500 text-white h-16 flex items-center justify-between px-5 shadow-md">
+    <div class="text-2xl font-bold">
         <a href="/">PediTiscos</a>
     </div>
-    <nav class="navigation">
-        <a href="/products">Products</a>
-        <a href="#">About us</a>
-        <a href="#">Contact</a>
-        <a href="/cart">Cart</a>
+    <nav class="flex items-center space-x-5">
+        <a href="/products" class="hover:underline">Products</a>
+        <a href="#" class="hover:underline">About us</a>
+        <a href="#" class="hover:underline">Contact</a>
+        <a href="/cart" class="hover:underline">Cart</a>
         @if (string.IsNullOrEmpty(fullName))
         {
-            <a href="/login">Login</a>
-            <a href="/register">Register</a>
+            <a href="/login" class="hover:underline">Login</a>
+            <a href="/register" class="hover:underline">Register</a>
         }
         else
         {
-            <a>Welcome, @fullName</a>
-            <a href="/order-history">Order History</a>
-            <a href="#" @onclick="Logout">Logout</a>
+            <span>Welcome, @fullName</span>
+            <a href="/order-history" class="hover:underline">Order History</a>
+            <a href="#" @onclick="Logout" class="hover:underline">Logout</a>
         }
     </nav>
-    <div class="search-bar">
-        <input type="text" placeholder="Search products..." @bind="searchTerm" />
-        <button @onclick="SearchProducts">Search</button>
+    <div class="flex items-center space-x-2">
+        <input type="text" placeholder="Search products..." @bind="searchTerm" class="p-2 rounded border border-gray-300" />
+        <button @onclick="SearchProducts" class="bg-white text-blue-500 p-2 rounded hover:bg-gray-200">Search</button>
     </div>
 </div>
 
@@ -76,8 +76,3 @@
         TokenService.OnUserLoggedIn -= HandleUserLoggedIn;
     }
 }
-
-
-
-
-

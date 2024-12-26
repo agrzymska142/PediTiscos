@@ -3,9 +3,9 @@
 @using System.Net.Http.Json
 @using RCL.Data.DTO
 
-<link href="_content/RCL/categories.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<nav class="nav-menu">
+<nav class="p-5 bg-yellow-100 text-gray-800">
     @if (categories == null)
     {
         <p>Loading categories...</p>
@@ -16,14 +16,14 @@
     }
     else
     {
-        <div class="categories-container">
+        <div class="flex flex-wrap justify-center gap-2 p-2 mt-2 bg-yellow-100">
             @foreach (var category in categories)
             {
-                <div class="category-card">
-                    <a href="products/@category.CategoryId" class="category-link">
-                        <img src="https://via.placeholder.com/250" alt="@category.Name" class="category-image" />
-                        <div class="category-name">@category.Name</div>
-                        <div class="category-description">@category.Description</div>
+                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+                    <a href="products/@category.CategoryId" class="no-underline text-inherit">
+                        <img src="https://via.placeholder.com/250" alt="@category.Name" class="w-full h-auto rounded mb-4" />
+                        <div class="font-bold text-xl mb-2">@category.Name</div>
+                        <div class="text-gray-600">@category.Description</div>
                     </a>
                 </div>
             }
@@ -46,3 +46,4 @@
         }
     }
 }
+

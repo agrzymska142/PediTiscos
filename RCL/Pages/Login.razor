@@ -6,19 +6,21 @@
 @using System.Net.Http.Headers
 @using System.Net.Http.Json
 
-<div class="login-container">
-    <h2>Login</h2>
-    <p>@message</p>
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<div class="max-w-md mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Login</h2>
+    <p class="text-center text-red-600">@message</p>
     <form @onsubmit="HandleLogin">
-        <div>
-            <label for="username">Username:</label>
-            <input id="username" @bind="loginModel.UserName" />
+        <div class="mb-4">
+            <label for="username" class="block mb-2 font-bold text-gray-700">Username:</label>
+            <input id="username" @bind="loginModel.UserName" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <div>
-            <label for="password">Password:</label>
-            <input id="password" type="password" @bind="loginModel.Password" />
+        <div class="mb-4">
+            <label for="password" class="block mb-2 font-bold text-gray-700">Password:</label>
+            <input id="password" type="password" @bind="loginModel.Password" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <button type="submit">Login</button>
+        <button type="submit" class="w-full p-2 bg-green-500 text-white rounded hover:bg-green-700">Login</button>
     </form>
 </div>
 
@@ -78,61 +80,5 @@
         public string UserId { get; set; } = string.Empty;
     }
 }
-
-<style>
-    .login-container {
-        max-width: 400px;
-        margin: 20px auto;
-        padding: 20px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        background-color: #f9f9f9;
-    }
-
-        .login-container h2 {
-            margin-bottom: 20px;
-            text-align: center;
-        }
-
-        .login-container div {
-            margin-bottom: 15px;
-        }
-
-        .login-container label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .login-container input {
-            width: 100%;
-            padding: 8px;
-            box-sizing: border-box;
-            border: 1px solid #ccc;
-            border-radius: 4px;
-        }
-
-        .login-container button {
-            width: 100%;
-            padding: 10px;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
-            .login-container button:hover {
-                background-color: #45a049;
-            }
-
-        .login-container p {
-            color: red;
-            text-align: center;
-        }
-</style>
-
-
-
 
 

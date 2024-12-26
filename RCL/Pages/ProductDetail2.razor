@@ -3,24 +3,24 @@
 @using System.Net.Http.Json
 @using RCL.Data.DTO
 
-<link href="_content/RCL/product-detail.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div class="product-container">
+<div class="flex justify-center my-10">
     @if (product == null)
     {
-        <p class="loading-message">Loading product...</p>
+        <p class="text-center text-xl text-gray-600">Loading product...</p>
     }
     else
     {
-        <div class="product-card">
-            <div class="product-card-header">
-                <h3>@product.Name</h3>
+        <div class="bg-white text-gray-800 border-none rounded-lg shadow-lg p-8 max-w-lg w-full text-center transition-transform transform hover:-translate-y-2 hover:shadow-2xl">
+            <div class="mb-6">
+                <h3 class="text-3xl font-bold text-gray-900">@product.Name</h3>
             </div>
-            <div class="product-card-body">
-                <img src="https://via.placeholder.com/300" alt="@product.Name" class="product-image" />
-                <p class="product-description">@product.Description</p>
-                <p class="product-price"><strong>Price:</strong> @product.Price.ToString("C")</p>
-                <p class="product-stock"><strong>Stock:</strong> @product.Stock</p>
+            <div class="mb-6">
+                <img src="https://via.placeholder.com/300" alt="@product.Name" class="w-full h-auto rounded-lg mb-4" />
+                <p class="text-lg text-gray-700 mb-4">@product.Description</p>
+                <p class="text-2xl text-blue-600 font-bold mb-4"><strong>Price:</strong> @product.Price.ToString("C")</p>
+                <p class="text-xl text-green-600 mb-4"><strong>Stock:</strong> @product.Stock</p>
             </div>
         </div>
     }

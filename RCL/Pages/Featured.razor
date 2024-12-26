@@ -1,21 +1,21 @@
 ﻿@inject HttpClient Http
-<link href="_content/RCL/featured.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div class="featured-card">
+<div class="flex justify-center my-10">
     @if (featuredProduct == null)
     {
         <p>Loading featured product...</p>
     }
     else
     {
-        <div class="card">
-            <div class="card-header">
-                <h3>@featuredProduct.Name</h3>
+        <div class="bg-white border-none rounded-lg shadow-md p-6 max-w-md w-full text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+            <div class="mb-4">
+                <h3 class="text-2xl font-bold text-gray-800">@featuredProduct.Name</h3>
             </div>
-            <div class="card-body">
-                <p><strong>Description:</strong> @featuredProduct.Description</p>
-                <p><strong>Price:</strong> $@featuredProduct.Price</p>
-                <p><strong>Stock:</strong> @featuredProduct.Stock</p>
+            <div>
+                <p class="my-2 text-lg text-gray-600"><strong>Description:</strong> @featuredProduct.Description</p>
+                <p class="my-2 text-lg text-gray-600"><strong>Price:</strong> $@featuredProduct.Price</p>
+                <p class="my-2 text-lg text-gray-600"><strong>Stock:</strong> @featuredProduct.Stock</p>
             </div>
         </div>
     }
@@ -46,3 +46,4 @@
         public string CategoryName { get; set; }
     }
 }
+

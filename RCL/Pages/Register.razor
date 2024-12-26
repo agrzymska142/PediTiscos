@@ -1,13 +1,13 @@
 ﻿@page "/register"
 @inject HttpClient Http
 
-<link href="_content/RCL/register.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
-<div class="register-container">
-    <h2>Register</h2>
+<div class="max-w-md mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    <h2 class="text-2xl font-bold text-center text-gray-800 mb-6">Register</h2>
     @if (errors.Any())
     {
-        <ul class="error-messages">
+        <ul class="list-none p-4 mb-6 text-red-700 bg-red-100 border border-red-300 rounded">
             @foreach (var error in errors)
             {
                 <li>@error</li>
@@ -16,26 +16,26 @@
     }
     @if (!string.IsNullOrEmpty(message))
     {
-        <p class="message">@message</p>
+        <p class="text-center p-4 mb-6 text-green-700 bg-green-100 border border-green-300 rounded">@message</p>
     }
     <form @onsubmit="HandleRegister">
-        <div class="form-group">
-            <label for="name">Name:</label>
-            <input id="name" @bind="registerModel.Name" />
+        <div class="mb-4">
+            <label for="name" class="block mb-2 font-bold text-gray-700">Name:</label>
+            <input id="name" @bind="registerModel.Name" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <div class="form-group">
-            <label for="surname">Surname:</label>
-            <input id="surname" @bind="registerModel.Surname" />
+        <div class="mb-4">
+            <label for="surname" class="block mb-2 font-bold text-gray-700">Surname:</label>
+            <input id="surname" @bind="registerModel.Surname" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <div class="form-group">
-            <label for="email">Email:</label>
-            <input id="email" type="email" @bind="registerModel.Email" />
+        <div class="mb-4">
+            <label for="email" class="block mb-2 font-bold text-gray-700">Email:</label>
+            <input id="email" type="email" @bind="registerModel.Email" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <div class="form-group">
-            <label for="password">Password:</label>
-            <input id="password" type="password" @bind="registerModel.Password" />
+        <div class="mb-4">
+            <label for="password" class="block mb-2 font-bold text-gray-700">Password:</label>
+            <input id="password" type="password" @bind="registerModel.Password" class="w-full p-2 border border-gray-300 rounded" />
         </div>
-        <button type="submit">Register</button>
+        <button type="submit" class="w-full p-2 bg-blue-500 text-white rounded hover:bg-blue-700">Register</button>
     </form>
 </div>
 

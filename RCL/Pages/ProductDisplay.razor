@@ -7,13 +7,14 @@
 @inject ILocalStorageService LocalStorage
 @inject ITokenService TokenService
 
-<link href="_content/RCL/product.css" rel="stylesheet" />
-<nav class="nav-menu">
-    <div class="search-filter">
-        <input type="text" placeholder="Search products..." @bind="searchTerm" class="search-input" />
-        <button @onclick="ApplyFilters" class="search-button">Search</button>
-        <label class="available-label">
-            <input type="checkbox" @bind="onlyAvailable" class="available-checkbox" />
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<nav class="p-5 bg-yellow-100 text-gray-800">
+    <div class="flex items-center justify-center gap-4 mb-5">
+        <input type="text" placeholder="Search products..." @bind="searchTerm" class="p-2 border border-gray-300 rounded" />
+        <button @onclick="ApplyFilters" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Search</button>
+        <label class="flex items-center gap-2">
+            <input type="checkbox" @bind="onlyAvailable" class="w-5 h-5" />
             Only available
         </label>
     </div>
@@ -28,22 +29,22 @@
     }
     else
     {
-        <div class="products-container">
+        <div class="flex flex-wrap justify-center gap-5 mt-5">
             @foreach (var product in products)
             {
-                <div class="product-card">
-                    <a href="product/@product.ProductId" class="product-link">
-                        <img src="https://via.placeholder.com/250" alt="@product.Name" class="product-image" />
-                        <div class="product-name">@product.Name</div>
-                        <div class="product-description">@product.Description</div>
-                        <div class="product-price">Price: @product.Price.ToString("C")</div>
-                        <div class="product-stock">Stock: @product.Stock</div>
+                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-5 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+                    <a href="product/@product.ProductId" class="no-underline text-inherit">
+                        <img src="https://via.placeholder.com/250" alt="@product.Name" class="w-full h-auto rounded mb-4" />
+                        <div class="font-bold text-xl mb-2">@product.Name</div>
+                        <div class="text-gray-600 mb-2">@product.Description</div>
+                        <div class="text-blue-500 font-bold mb-2">Price: @product.Price.ToString("C")</div>
+                        <div class="text-green-500 mb-4">Stock: @product.Stock</div>
                     </a>
-                    <div class="quantity-container">
-                        <label for="quantity-@product.ProductId">Quantity:</label>
-                        <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" />
+                    <div class="flex items-center justify-center mb-4">
+                        <label for="quantity-@product.ProductId" class="mr-2">Quantity:</label>
+                        <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" class="w-16 p-1 border border-gray-300 rounded" />
                     </div>
-                    <button @onclick="() => AddToCart(product)" class="add-to-cart-button">Add to cart</button>
+                    <button @onclick="() => AddToCart(product)" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Add to cart</button>
                 </div>
             }
         </div>
@@ -139,3 +140,5 @@
         }
     }
 }
+
+
