@@ -277,6 +277,17 @@ public class ProductsController : ControllerBase
 
         _context.Orders.Add(order);
 
+        // Zaktualizuj stan magazynowy produktów
+        foreach (var cartItem in cartItems)
+        {
+            var product = cartItem.Product;
+            product.Stock -= cartItem.Quantity;
+            if (product.Stock < 0)
+            {
+                return BadRequest($"Not enough stock for product {product.Name}.");
+            }
+        }
+
         // Usuń produkty z koszyka
         _context.CartItems.RemoveRange(cartItems);
 
@@ -284,6 +295,40 @@ public class ProductsController : ControllerBase
         await _context.SaveChangesAsync();
 
         return Ok(new { Message = "Order placed successfully.", OrderId = order.OrderId });
+    }
+
+    [HttpGet("order-history")]
+    public async Task<IActionResult> GetOrderHistory()
+    {
+        if (!User.Identity.IsAuthenticated)
+        {
+            return Unauthorized("User must be logged in to view order history.");
+        }
+
+        var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+        var orders = await _context.Orders
+            .Where(o => o.ClientEmail == userId)
+            .Include(o => o.OrderDetails)
+            .ToListAsync();
+
+        var orderDtos = orders.Select(o => new OrderDto
+        {
+            UserId = userId,
+            OrderDate = o.OrderDate,
+            ClientName = o.ClientName,
+            ClientEmail = o.ClientEmail,
+            TotalAmount = o.TotalAmount,
+            Status = o.Status,
+            OrderDetails = o.OrderDetails.Select(od => new OrderDetailDto
+            {
+                ProductId = od.ProductId,
+                Quantity = od.Quantity,
+                UnitPrice = od.UnitPrice
+            }).ToList()
+        }).ToList();
+
+        return Ok(orderDtos);
     }
 
 }

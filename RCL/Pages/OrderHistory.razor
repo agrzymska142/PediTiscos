@@ -1,0 +1,76 @@
+﻿@page "/order-history"
+@inject HttpClient Http
+@using Blazored.LocalStorage
+@using RCL.Data.DTO
+@using RCL.Data.Interfaces
+@inject ILocalStorageService LocalStorage
+@inject ITokenService TokenService
+
+<h3>Order History</h3>
+
+@if (orders == null)
+{
+    <p>Loading...</p>
+}
+else if (!orders.Any())
+{
+    <p>You have no orders.</p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                
+                <th>Date</th>
+                <th>Total Amount</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var order in orders)
+            {
+                <tr>               
+                    <td>@order.OrderDate.ToString("g")</td>
+                    <td>@order.TotalAmount.ToString("C")</td>
+                    <td>@order.Status</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<OrderDto> orders;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadOrderHistory();
+    }
+
+    private async Task LoadOrderHistory()
+    {
+        try
+        {
+            var userId = await TokenService.GetUserIdAsync();
+            var request = new HttpRequestMessage(HttpMethod.Get, "api/products/order-history");
+            request.Headers.Add("sessionId", userId);
+
+            var response = await Http.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>();
+            }
+            else
+            {
+                var error = await response.Content.ReadAsStringAsync();
+                Console.WriteLine($"Error fetching order history: {error}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Exception: {ex.Message}");
+        }
+    }
+}

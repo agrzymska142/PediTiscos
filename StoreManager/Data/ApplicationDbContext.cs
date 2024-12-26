@@ -23,7 +23,6 @@ namespace StoreManager.Data
 
         public DbSet<CartItem> CartItems { get; set; }
 
-
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
         }
@@ -35,41 +34,16 @@ namespace StoreManager.Data
 
             modelBuilder.Entity<Category>().HasData(
                 new Category { CategoryId = 1, Name = "Drinks", Description = "Beverages" },
-                new Category { CategoryId = 2, Name = "Snacks", Description = "Light meals and snacks" }
+                new Category { CategoryId = 2, Name = "Snacks", Description = "Light meals and snacks" },
+                new Category { CategoryId = 3, Name = "Fruits", Description = "Fresh fruits" },
+                new Category { CategoryId = 4, Name = "Vegetables", Description = "Fresh vegetables" }
             );
 
             modelBuilder.Entity<Product>().HasData(
                 new Product { ProductId = 1, Name = "Coke", Description = "Soft drink", Price = 1.5M, Stock = 100, CategoryId = 1 },
-                new Product { ProductId = 2, Name = "Chips", Description = "Potato chips", Price = 2.0M, Stock = 50, CategoryId = 2 }
-            );
-
-            // Seed Orders
-            modelBuilder.Entity<Order>().HasData(
-                new Order
-                {
-                    OrderId = 1,
-                    OrderDate = DateTime.Now.AddDays(-1),
-                    ClientName = "John Doe",
-                    ClientEmail = "johndoe@example.com",
-                    TotalAmount = 7.5M,
-                    Status = "Pending"
-                },
-                new Order
-                {
-                    OrderId = 2,
-                    OrderDate = DateTime.Now.AddDays(-2),
-                    ClientName = "Jane Smith",
-                    ClientEmail = "janesmith@example.com",
-                    TotalAmount = 3.0M,
-                    Status = "Confirmed"
-                }
-            );
-
-            // Seed OrderDetails
-            modelBuilder.Entity<OrderDetail>().HasData(
-                new OrderDetail { OrderDetailId = 1, OrderId = 1, ProductId = 1, Quantity = 2, UnitPrice = 1.5M },
-                new OrderDetail { OrderDetailId = 2, OrderId = 1, ProductId = 2, Quantity = 1, UnitPrice = 2.0M },
-                new OrderDetail { OrderDetailId = 3, OrderId = 2, ProductId = 2, Quantity = 1, UnitPrice = 2.0M }
+                new Product { ProductId = 2, Name = "Chips", Description = "Potato chips", Price = 2.0M, Stock = 50, CategoryId = 2 },
+                new Product { ProductId = 3, Name = "Apple", Description = "Fresh apple", Price = 0.5M, Stock = 200, CategoryId = 3 },
+                new Product { ProductId = 4, Name = "Carrot", Description = "Fresh carrot", Price = 0.3M, Stock = 150, CategoryId = 4 }
             );
         }
     }

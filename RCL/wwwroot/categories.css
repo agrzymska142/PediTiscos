@@ -1,6 +1,6 @@
 .nav-menu {
     padding: 20px;
-    background-color: #f8f9fa;
+    background-color: #FFF8E1;
     color: #333;
 }
 
@@ -11,6 +11,7 @@
     gap: 20px;
     padding: 20px;
     margin-top: 20px;
+    background-color: #FFF8E1;
 }
 
 .category-card {

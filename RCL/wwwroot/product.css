@@ -1,6 +1,6 @@
 .nav-menu {
     padding: 20px;
-    background-color: #f1f1f1;
+    background-color: #FFF8E1;
     color: #333;
 }
 
@@ -10,6 +10,7 @@
     justify-content: center;
     gap: 10px;
     margin-bottom: 20px;
+    background-color: #FFF8E1;
 }
 
 .search-input {
@@ -17,6 +18,7 @@
     border: 1px solid #ccc;
     border-radius: 4px;
     width: 200px;
+    background-color: #FFF8E1;
 }
 
 .search-button {
@@ -37,11 +39,13 @@
     display: flex;
     align-items: center;
     gap: 5px;
+    background-color: #FFF8E1;
 }
 
 .available-checkbox {
     width: 20px;
     height: 20px;
+    background-color: #FFF8E1;
 }
 
 .products-container {
@@ -50,6 +54,7 @@
     justify-content: center;
     gap: 20px;
     margin-top: 20px;
+    background-color: #FFF8E1;
 }
 
 .product-card {
