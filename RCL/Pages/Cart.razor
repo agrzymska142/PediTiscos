@@ -57,8 +57,26 @@
     }
 </div>
 
+@if (showToast)
+{
+    <div class="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300" style="opacity: @(showToast ? 1 : 0);">
+        @toastMessage <!-- Komunikat toast -->
+    </div>
+}
+
+@if (showErrorToast)
+{
+    <div class="fixed bottom-5 right-5 bg-red-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300" style="opacity: @(showErrorToast ? 1 : 0);">
+        @errorMessage <!-- Komunikat błędu toast -->
+    </div>
+}
+
 @code {
     private List<CartItemDto> cartItems;
+    private bool showToast = false; // Flaga kontrolująca widoczność komunikatu toast
+    private bool showErrorToast = false; // Flaga kontrolująca widoczność komunikatu błędu toast
+    private string toastMessage; // Treść komunikatu toast
+    private string errorMessage; // Treść komunikatu błędu toast
 
     protected override async Task OnInitializedAsync()
     {
@@ -165,6 +183,7 @@
             if (string.IsNullOrEmpty(userId))
             {
                 Console.WriteLine("User must be logged in to place an order.");
+                ShowErrorToast("User must be logged in to place an order.");
                 return;
             }
 
@@ -177,18 +196,44 @@
             {
                 Console.WriteLine("Order placed successfully.");
                 cartItems.Clear();
+                ShowToast("Order placed successfully.");
             }
             else
             {
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error placing order: {error}");
+                ShowErrorToast($"Error placing order: {error}");
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception: {ex.Message}");
+            ShowErrorToast($"Exception: {ex.Message}");
         }
     }
-}
 
+    private void ShowToast(string message)
+    {
+        toastMessage = message; // Ustaw treść komunikatu toast
+        showToast = true; // Ustaw flagę showToast na true
+        StateHasChanged(); // Odśwież stan komponentu
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            showToast = false; // Ustaw flagę showToast na false po 3 sekundach
+            InvokeAsync(StateHasChanged); // Odśwież stan komponentu
+        });
+    }
+
+    private void ShowErrorToast(string message)
+    {
+        errorMessage = message; // Ustaw treść komunikatu błędu toast
+        showErrorToast = true; // Ustaw flagę showErrorToast na true
+        StateHasChanged(); // Odśwież stan komponentu
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            showErrorToast = false; // Ustaw flagę showErrorToast na false po 3 sekundach
+            InvokeAsync(StateHasChanged); // Odśwież stan komponentu
+        });
+    }
+}
 

@@ -35,6 +35,7 @@
                 <td>
                     <button class="btn btn-warning" @onclick="() => EditOrder(order.OrderId)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => DeleteOrder(order.OrderId)">Delete</button>
+                    <button class="btn btn-info" @onclick="() => ViewOrder(order.OrderId)">View</button> <!-- Dodano przycisk View -->
                 </td>
             </tr>
         }
@@ -63,4 +64,10 @@
     {
         NavManager.NavigateTo($"/orders/delete/{id}");
     }
+
+    private void ViewOrder(int id)
+    {
+        NavManager.NavigateTo($"/orders/details/{id}"); // Dodano nawigację do szczegółów zamówienia
+    }
 }
+

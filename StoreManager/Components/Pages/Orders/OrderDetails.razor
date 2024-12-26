@@ -1,0 +1,174 @@
+﻿@page "/orders/details/{orderId:int}"
+@using Microsoft.EntityFrameworkCore
+@using StoreManager.Data
+@using StoreManager.Data.Models
+@inject ApplicationDbContext DbContext
+@inject NavigationManager NavManager
+@rendermode InteractiveServer
+
+<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+
+<div class="max-w-4xl mx-auto p-6 bg-gray-100 rounded-lg shadow-md">
+    @if (order == null)
+    {
+        <p class="text-center text-gray-600">Loading order details...</p> <!-- Wyświetl komunikat ładowania, jeśli zamówienie jest null -->
+    }
+    else
+    {
+        <h3 class="text-2xl font-bold text-center text-gray-800 mb-6">Order Details</h3>
+        <div class="mb-4">
+            <p><strong>Order Date:</strong> @order.OrderDate.ToShortDateString()</p>
+            <p><strong>Client Name:</strong> @order.ClientName</p>
+            <p><strong>Client Email:</strong> @order.ClientEmail</p>
+            <p><strong>Total Amount:</strong> @order.TotalAmount.ToString("C2")</p> <!-- Zmieniono formatowanie ceny -->
+            <p><strong>Status:</strong> @order.Status</p>
+        </div>
+        <table class="min-w-full bg-white rounded-lg shadow-md">
+            <thead>
+                <tr>
+                    <th class="py-3 px-4 bg-blue-500 text-white">Product Name</th>
+                    <th class="py-3 px-4 bg-blue-500 text-white">Quantity</th>
+                    <th class="py-3 px-4 bg-blue-500 text-white">Unit Price</th>
+                    <th class="py-3 px-4 bg-blue-500 text-white">Total Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var detail in order.OrderDetails)
+                {
+                    <tr class="border-b border-gray-200">
+                        <td class="py-3 px-4">@detail.Product.Name</td>
+                        <td class="py-3 px-4">@detail.Quantity</td>
+                        <td class="py-3 px-4">@detail.UnitPrice.ToString("C2")</td> <!-- Zmieniono formatowanie ceny -->
+                        <td class="py-3 px-4">@(detail.UnitPrice * detail.Quantity).ToString("C2")</td> <!-- Zmieniono formatowanie ceny -->
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="mt-6 flex justify-end space-x-4">
+            <button class="bg-green-500 text-white p-2 rounded hover:bg-green-700" @onclick="ApproveOrder">Approve</button> <!-- Przycisk zatwierdzania -->
+            <button class="bg-red-500 text-white p-2 rounded hover:bg-red-700" @onclick="RejectOrder">Reject</button> <!-- Przycisk odrzucania -->
+            <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" @onclick="ShipOrder">Ship</button> <!-- Przycisk ekspediowania -->
+        </div>
+    }
+</div>
+
+@if (showToast)
+{
+    <div class="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300" style="opacity: @(showToast ? 1 : 0);">
+        @toastMessage <!-- Komunikat toast -->
+    </div>
+}
+
+@if (showErrorToast)
+{
+    <div class="fixed bottom-5 right-5 bg-red-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300" style="opacity: @(showErrorToast ? 1 : 0);">
+        @errorMessage <!-- Komunikat błędu toast -->
+    </div>
+}
+
+@code {
+    private Order order;
+    private bool showToast = false; // Flaga kontrolująca widoczność komunikatu toast
+    private bool showErrorToast = false; // Flaga kontrolująca widoczność komunikatu błędu toast
+    private string toastMessage; // Treść komunikatu toast
+    private string errorMessage; // Treść komunikatu błędu toast
+
+    [Parameter]
+    public int orderId { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Pobierz szczegóły zamówienia z bazy danych
+            order = await DbContext.Orders
+                .Include(o => o.OrderDetails)
+                .ThenInclude(od => od.Product)
+                .FirstOrDefaultAsync(o => o.OrderId == orderId);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching order details: {ex.Message}"); // Obsługa błędów
+        }
+    }
+
+    private async Task ApproveOrder()
+    {
+        try
+        {
+            if (order != null)
+            {
+                order.Status = "Confirmed";
+                await DbContext.SaveChangesAsync();
+                ShowToast("Order approved successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast($"Error approving order: {ex.Message}");
+        }
+    }
+
+    private async Task RejectOrder()
+    {
+        try
+        {
+            if (order != null)
+            {
+                order.Status = "Rejected";
+                await DbContext.SaveChangesAsync();
+                ShowToast("Order rejected successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast($"Error rejecting order: {ex.Message}");
+        }
+    }
+
+    private async Task ShipOrder()
+    {
+        try
+        {
+            if (order != null)
+            {
+                order.Status = "Shipped";
+                await DbContext.SaveChangesAsync();
+                ShowToast("Order shipped successfully.");
+            }
+        }
+        catch (Exception ex)
+        {
+            ShowErrorToast($"Error shipping order: {ex.Message}");
+        }
+    }
+
+    private void ShowToast(string message)
+    {
+        toastMessage = message; // Ustaw treść komunikatu toast
+        showToast = true; // Ustaw flagę showToast na true
+        StateHasChanged(); // Odśwież stan komponentu
+        Task.Delay(2000).ContinueWith(_ =>
+        {
+            showToast = false; // Ustaw flagę showToast na false po 2 sekundach
+            InvokeAsync(StateHasChanged); // Odśwież stan komponentu
+            NavManager.NavigateTo("/orders"); // Przekieruj na stronę zamówień
+        });
+    }
+
+    private void ShowErrorToast(string message)
+    {
+        errorMessage = message; // Ustaw treść komunikatu błędu toast
+        showErrorToast = true; // Ustaw flagę showErrorToast na true
+        StateHasChanged(); // Odśwież stan komponentu
+        Task.Delay(2000).ContinueWith(_ =>
+        {
+            showErrorToast = false; // Ustaw flagę showErrorToast na false po 2 sekundach
+            InvokeAsync(StateHasChanged); // Odśwież stan komponentu
+        });
+    }
+}
+
+
+
+

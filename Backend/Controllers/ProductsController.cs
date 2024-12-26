@@ -310,6 +310,7 @@ public class ProductsController : ControllerBase
         var orders = await _context.Orders
             .Where(o => o.ClientEmail == userId)
             .Include(o => o.OrderDetails)
+            .ThenInclude(od => od.Product)
             .ToListAsync();
 
         var orderDtos = orders.Select(o => new OrderDto
@@ -323,6 +324,7 @@ public class ProductsController : ControllerBase
             OrderDetails = o.OrderDetails.Select(od => new OrderDetailDto
             {
                 ProductId = od.ProductId,
+                ProductName = od.Product.Name,
                 Quantity = od.Quantity,
                 UnitPrice = od.UnitPrice
             }).ToList()

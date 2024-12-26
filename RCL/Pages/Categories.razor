@@ -8,42 +8,71 @@
 <nav class="p-5 bg-yellow-100 text-gray-800">
     @if (categories == null)
     {
-        <p>Loading categories...</p>
+        <p>Loading categories...</p> <!-- Wyświetl komunikat ładowania, jeśli kategorie są null -->
     }
     else if (categories.Count == 0)
     {
-        <p>No categories found.</p>
+        <p>No categories found.</p> <!-- Wyświetl komunikat, jeśli nie znaleziono kategorii -->
     }
     else
     {
-        <div class="flex flex-wrap justify-center gap-2 p-2 mt-2 bg-yellow-100">
-            @foreach (var category in categories)
+        <div class="flex flex-wrap justify-center gap-4 p-2 mt-0 bg-yellow-100">
+            @foreach (var category in PagedCategories)
             {
-                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-48 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg hover:bg-yellow-200">
                     <a href="products/@category.CategoryId" class="no-underline text-inherit">
-                        <img src="https://via.placeholder.com/250" alt="@category.Name" class="w-full h-auto rounded mb-4" />
-                        <div class="font-bold text-xl mb-2">@category.Name</div>
-                        <div class="text-gray-600">@category.Description</div>
+                        <img src="https://via.placeholder.com/250" alt="@category.Name" class="w-full h-auto rounded mb-4" /> <!-- Placeholder dla obrazu kategorii -->
+                        <div class="font-bold text-lg mb-2">@category.Name</div> <!-- Nazwa kategorii -->
+                        <div class="text-gray-600">@category.Description</div> <!-- Opis kategorii -->
                     </a>
                 </div>
             }
+        </div>
+        <div class="flex justify-center mt-4">
+            <button @onclick="PreviousPage" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" disabled="@(!HasPreviousPage)">Previous</button>
+            <button @onclick="NextPage" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 ml-2" disabled="@(!HasNextPage)">Next</button>
         </div>
     }
 </nav>
 
 @code {
-    private List<CategoryDTO> categories;
+    private List<CategoryDTO> categories; // Lista kategorii
+    private int currentPage = 1; // Bieżąca strona
+    private int pageSize = 5; // Rozmiar strony
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
+            // Pobierz kategorie z API
             categories = await Http.GetFromJsonAsync<List<CategoryDTO>>("api/Categories");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Błąd podczas pobierania kategorii: {ex.Message}");
+            Console.WriteLine($"Błąd podczas pobierania kategorii: {ex.Message}"); // Obsługa błędów
+        }
+    }
+
+    private IEnumerable<CategoryDTO> PagedCategories => categories
+        .Skip((currentPage - 1) * pageSize)
+        .Take(pageSize);
+
+    private bool HasPreviousPage => currentPage > 1;
+    private bool HasNextPage => currentPage * pageSize < categories.Count;
+
+    private void PreviousPage()
+    {
+        if (HasPreviousPage)
+        {
+            currentPage--;
+        }
+    }
+
+    private void NextPage()
+    {
+        if (HasNextPage)
+        {
+            currentPage++;
         }
     }
 }
-

@@ -51,10 +51,18 @@
     }
 </nav>
 
+@if (showToast)
+{
+    <div class="fixed bottom-5 right-5 bg-green-500 text-white px-4 py-2 rounded shadow-lg transition-opacity duration-300" style="opacity: @(showToast ? 1 : 0);">
+        Product added to cart successfully! <!-- Komunikat toast -->
+    </div>
+}
+
 @code {
     private List<ProductDTO> products = new();
     private string searchTerm = string.Empty;
     private bool onlyAvailable = false;
+    private bool showToast = false; // Flaga kontrolująca widoczność komunikatu toast
 
     [Parameter]
     public int? CategoryId { get; set; }
@@ -124,21 +132,29 @@
             {
                 var result = await response.Content.ReadFromJsonAsync<AddToCartResponseDto>();
                 Console.WriteLine($"Success: {result.Message}");
-                // Optionally display a success notification to the user
+                ShowToast(); // Pokaż komunikat toast
             }
             else
             {
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error: {error}");
-                // Optionally display an error notification to the user
             }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception occurred: {ex.Message}");
-            // Optionally display an error notification to the user
         }
     }
-}
 
+    private void ShowToast()
+    {
+        showToast = true; // Ustaw flagę showToast na true
+        StateHasChanged(); // Odśwież stan komponentu
+        Task.Delay(3000).ContinueWith(_ =>
+        {
+            showToast = false; // Ustaw flagę showToast na false po 3 sekundach
+            InvokeAsync(StateHasChanged); // Odśwież stan komponentu
+        });
+    }
+}
 

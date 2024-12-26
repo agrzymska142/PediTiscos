@@ -3,31 +3,32 @@
 @inject NavigationManager Navigation
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 
 <div class="bg-blue-500 text-white h-16 flex items-center justify-between px-5 shadow-md">
     <div class="text-2xl font-bold">
-        <a href="/">PediTiscos</a>
+        <a href="/" class="hover:text-gray-200 transition-colors duration-300">PediTiscos</a>
     </div>
     <nav class="flex items-center space-x-5">
-        <a href="/products" class="hover:underline">Products</a>
-        <a href="#" class="hover:underline">About us</a>
-        <a href="#" class="hover:underline">Contact</a>
-        <a href="/cart" class="hover:underline">Cart</a>
+        <a href="/products" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-box-open"></i> Products</a>
+        <a href="#" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-info-circle"></i> About us</a>
+        <a href="#" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-envelope"></i> Contact</a>
+        <a href="/cart" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-shopping-cart"></i> Cart</a>
         @if (string.IsNullOrEmpty(fullName))
         {
-            <a href="/login" class="hover:underline">Login</a>
-            <a href="/register" class="hover:underline">Register</a>
+            <a href="/login" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="/register" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-user-plus"></i> Register</a>
         }
         else
         {
             <span>Welcome, @fullName</span>
-            <a href="/order-history" class="hover:underline">Order History</a>
-            <a href="#" @onclick="Logout" class="hover:underline">Logout</a>
+            <a href="/order-history" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-history"></i> Order History</a>
+            <a href="#" @onclick="Logout" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-sign-out-alt"></i> Logout</a>
         }
     </nav>
     <div class="flex items-center space-x-2">
-        <input type="text" placeholder="Search products..." @bind="searchTerm" class="p-2 rounded border border-gray-300" />
-        <button @onclick="SearchProducts" class="bg-white text-blue-500 p-2 rounded hover:bg-gray-200">Search</button>
+        <input type="text" placeholder="Search products..." @bind="searchTerm" class="p-2 rounded border border-gray-300 text-black" />
+        <button @onclick="ApplyFilters" class="bg-white text-blue-500 p-2 rounded hover:bg-gray-200 transition-colors duration-300"><i class="fas fa-search"></i> Search</button>
     </div>
 </div>
 
@@ -36,17 +37,19 @@
     private string searchTerm = string.Empty;
     private bool isInitialized;
 
+
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
         {
-            // Subscribe to TokenService changes
+            // Subskrybuj zmiany w TokenService
             TokenService.OnUserLoggedIn += HandleUserLoggedIn;
 
-            // Initialize fullName if the user is already logged in
+            // Inicjalizuj fullName, jeśli użytkownik jest już zalogowany
             fullName = await TokenService.GetFullNameAsync();
 
-            isInitialized = true; // Ensure initialization only happens once
+            isInitialized = true; // Upewnij się, że inicjalizacja odbywa się tylko raz
             StateHasChanged();
         }
     }
@@ -59,20 +62,21 @@
 
     private async Task Logout()
     {
-        await TokenService.ClearTokenAsync(); // Clear the stored token
-        fullName = null; // Reset the user's full name
+        await TokenService.ClearTokenAsync(); // Wyczyść przechowywany token
+        fullName = null; // Zresetuj pełne imię użytkownika
         StateHasChanged();
-        Navigation.NavigateTo("/login"); // Redirect to the login page
+        Navigation.NavigateTo("/login"); // Przekieruj na stronę logowania
     }
 
-    private void SearchProducts()
+    private void ApplyFilters()
     {
         Navigation.NavigateTo($"/products?search={searchTerm}");
     }
 
     public void Dispose()
     {
-        // Unsubscribe from the event when the component is disposed
+        // Anuluj subskrypcję zdarzenia, gdy komponent jest usuwany
         TokenService.OnUserLoggedIn -= HandleUserLoggedIn;
     }
 }
+
