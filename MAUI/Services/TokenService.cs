@@ -6,63 +6,72 @@ namespace MAUI.Services
 {
     public class MauiTokenService : ITokenService
     {
-        private readonly ISessionStorageService _sessionStorage;
         public event Func<Task> OnUserLoggedIn;
 
-        public MauiTokenService(ISessionStorageService sessionStorage)
+        public ValueTask SaveTokenAsync(string token)
         {
-            _sessionStorage = sessionStorage;
-        }
-
-        public async ValueTask SaveTokenAsync(string token)
-        {
-            await _sessionStorage.SetItemAsync("authToken", token);
+            Preferences.Set("authToken", token);
 
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
 
             var username = jwt.Claims.FirstOrDefault(c => c.Type == "sub")?.Value;
-            var firstName = jwt.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value;
-            var lastName = jwt.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
+            var firstName = jwt.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
+            var lastName = jwt.Claims.FirstOrDefault(c => c.Type == "surname")?.Value;
 
-            if (!string.IsNullOrEmpty(username)) await _sessionStorage.SetItemAsync("username", username);
-            if (!string.IsNullOrEmpty(firstName)) await _sessionStorage.SetItemAsync("firstName", firstName);
-            if (!string.IsNullOrEmpty(lastName)) await _sessionStorage.SetItemAsync("lastName", lastName);
+            if (!string.IsNullOrEmpty(username)) Preferences.Set("username", username);
+            if (!string.IsNullOrEmpty(firstName)) Preferences.Set("firstName", firstName);
+            if (!string.IsNullOrEmpty(lastName)) Preferences.Set("lastName", lastName);
 
             if (OnUserLoggedIn != null)
             {
-                await OnUserLoggedIn.Invoke();
+                return new ValueTask(OnUserLoggedIn.Invoke());
             }
+
+            return ValueTask.CompletedTask;
         }
 
-        public async ValueTask<string> GetTokenAsync()
+        public ValueTask<string> GetTokenAsync()
         {
-            return await _sessionStorage.GetItemAsync<string>("authToken");
+            var token = Preferences.Get("authToken", string.Empty);
+            return new ValueTask<string>(token);
         }
 
-        public async ValueTask<string> GetUsernameAsync()
+        public ValueTask<string> GetUsernameAsync()
         {
-            return await _sessionStorage.GetItemAsync<string>("username");
+            var username = Preferences.Get("username", string.Empty);
+            return new ValueTask<string>(username);
         }
 
-        public ValueTask SaveUserIdAsync(string userId) => _sessionStorage.SetItemAsync("userId", userId);
-
-        public ValueTask<string> GetUserIdAsync() => _sessionStorage.GetItemAsync<string>("userId");
-
-        public async ValueTask<string> GetFullNameAsync()
+        public ValueTask SaveUserIdAsync(string userId)
         {
-            var firstName = await _sessionStorage.GetItemAsync<string>("firstName");
-            var lastName = await _sessionStorage.GetItemAsync<string>("lastName");
-            return $"{firstName} {lastName}".Trim();
+            Preferences.Set("userId", userId);
+            return ValueTask.CompletedTask;
         }
 
-        public async ValueTask ClearTokenAsync()
+        public ValueTask<string> GetUserIdAsync()
         {
-            await _sessionStorage.RemoveItemAsync("authToken");
-            await _sessionStorage.RemoveItemAsync("userId");
-            await _sessionStorage.RemoveItemAsync("username");
-            await _sessionStorage.RemoveItemAsync("firstName");
-            await _sessionStorage.RemoveItemAsync("lastName");
+            var userId = Preferences.Get("userId", string.Empty);
+            return new ValueTask<string>(userId);
+        }
+
+        public ValueTask<string> GetFullNameAsync()
+        {
+            var firstName = Preferences.Get("firstName", string.Empty);
+            var lastName = Preferences.Get("lastName", string.Empty);
+            var fullName = $"{firstName} {lastName}".Trim();
+            return new ValueTask<string>(fullName);
+        }
+
+        public ValueTask ClearTokenAsync()
+        {
+            Preferences.Remove("authToken");
+            Preferences.Remove("userId");
+            Preferences.Remove("username");
+            Preferences.Remove("firstName");
+            Preferences.Remove("lastName");
+
+            return ValueTask.CompletedTask;
         }
     }
 }
