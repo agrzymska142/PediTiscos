@@ -126,8 +126,13 @@
             Logger.LogWarning("User account locked out.");
             RedirectManager.RedirectTo("Account/Lockout");
         }
+        else if (result.IsNotAllowed)
+        {
+            errorMessage = "Access denied. Only Administrators and Employees can log in.";
+        }
         else
         {
+            Logger.LogWarning("Error: Invalid login attempt. " + result.ToString());
             errorMessage = "Error: Invalid login attempt.";
         }
     }

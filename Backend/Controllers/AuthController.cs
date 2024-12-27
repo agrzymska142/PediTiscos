@@ -52,7 +52,8 @@ namespace Backend.Controllers
                 Email = registerDto.Email,
                 Name = registerDto.Name,
                 Surname = registerDto.Surname,
-                Status = 0
+                Status = 1,
+                EmailConfirmed = true
             };
 
             var result = await _userManager.CreateAsync(newUser, registerDto.Password);
