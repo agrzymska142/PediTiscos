@@ -16,16 +16,34 @@
     }
     else
     {
-        <div class="flex flex-wrap justify-center gap-4 p-2 mt-0 bg-yellow-100">
+        <div class="hidden md:flex flex-wrap justify-center gap-4 p-2 mt-0 bg-yellow-100">
             @foreach (var category in PagedCategories)
             {
-                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-48 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg hover:bg-yellow-200">
+                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-full sm:w-48 md:w-48 lg:w-48 xl:w-48 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg hover:bg-yellow-200">
                     <a href="products/@category.CategoryId" class="no-underline text-inherit">
                         <div class="font-bold text-lg mb-2">@category.Name</div> <!-- Nazwa kategorii -->
                         <div class="text-gray-600">@category.Description</div> <!-- Opis kategorii -->
                     </a>
                 </div>
             }
+        </div>
+        <div class="md:hidden flex justify-center">
+            <button @onclick="ToggleMenu" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700 focus:outline-none">
+                <i class="fas fa-bars"></i> Categories
+            </button>
+        </div>
+        <div class="md:hidden" style="display: @(isMenuOpen ? "block" : "none")">
+            <div class="flex flex-col items-center space-y-5 bg-yellow-100 p-5">
+                @foreach (var category in PagedCategories)
+                {
+                    <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-3 w-full text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg hover:bg-yellow-200">
+                        <a href="products/@category.CategoryId" class="no-underline text-inherit">
+                            <div class="font-bold text-lg mb-2">@category.Name</div> <!-- Nazwa kategorii -->
+                            <div class="text-gray-600">@category.Description</div> <!-- Opis kategorii -->
+                        </a>
+                    </div>
+                }
+            </div>
         </div>
         <div class="flex justify-center mt-4">
             <button @onclick="PreviousPage" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" disabled="@(!HasPreviousPage)">Previous</button>
@@ -38,6 +56,7 @@
     private List<CategoryDTO> categories; // Lista kategorii
     private int currentPage = 1; // Bieżąca strona
     private int pageSize = 5; // Rozmiar strony
+    private bool isMenuOpen = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -74,4 +93,10 @@
             currentPage++;
         }
     }
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
+    }
 }
+
