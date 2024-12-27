@@ -1,4 +1,5 @@
 ﻿@page "/products/delete/{ProductId:int}"
+@using Microsoft.EntityFrameworkCore
 @using StoreManager.Data
 @using StoreManager.Data.Models
 @using Microsoft.AspNetCore.Authorization
@@ -15,9 +16,15 @@
     <button class="btn btn-secondary" @onclick="Cancel">No</button>
 </p>
 
+@if (!string.IsNullOrEmpty(ErrorMessage))
+{
+    <div class="alert alert-danger">@ErrorMessage</div>
+}
+
 @code {
     [Parameter] public int ProductId { get; set; }
     private Product? Product;
+    private string ErrorMessage;
 
     protected override async Task OnInitializedAsync()
     {
@@ -28,10 +35,22 @@
     {
         if (Product != null)
         {
-            DbContext.Products.Remove(Product);
-            await DbContext.SaveChangesAsync();
+            // Sprawdź, czy produkt występuje w zamówieniach z odpowiednim statusem
+            bool isProductInApprovedOrShippedOrders = await DbContext.OrderDetails
+                .Include(od => od.Order)
+                .AnyAsync(od => od.ProductId == ProductId && (od.Order.Status == "Confirmed" || od.Order.Status == "Shipped"));
+
+            if (isProductInApprovedOrShippedOrders)
+            {
+                ErrorMessage = "Cannot delete the product because it has been sold in approved or shipped orders.";
+            }
+            else
+            {
+                DbContext.Products.Remove(Product);
+                await DbContext.SaveChangesAsync();
+                NavManager.NavigateTo("/products");
+            }
         }
-        NavManager.NavigateTo("/products");
     }
 
     private void Cancel()
