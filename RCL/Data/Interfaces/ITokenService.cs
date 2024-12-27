@@ -12,8 +12,8 @@ namespace RCL.Data.Interfaces
         ValueTask<string> GetTokenAsync();
         ValueTask<string> GetUsernameAsync();
         ValueTask<string> GetFullNameAsync();
-        Task SaveUserIdAsync(string userId);
-        Task<string> GetUserIdAsync();
+        ValueTask SaveUserIdAsync(string userId);
+        ValueTask<string> GetUserIdAsync();
         ValueTask ClearTokenAsync();
         event Func<Task> OnUserLoggedIn;
     }

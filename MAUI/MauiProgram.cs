@@ -19,10 +19,10 @@ namespace MAUI
             builder.Services.AddMauiBlazorWebView();
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") }); // Backend base URL
+            builder.Services.AddSingleton<ITokenService, MauiTokenService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools(); 
-            builder.Services.AddSingleton<ITokenService, MobileTokenService>();
 
             builder.Logging.AddDebug();
 #endif

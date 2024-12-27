@@ -44,9 +44,9 @@ public class WebTokenService : ITokenService
         return await _localStorage.GetItemAsync<string>("username");
     }
 
-    public Task SaveUserIdAsync(string userId) => _localStorage.SetItemAsync("userId", userId).AsTask();
+    public ValueTask SaveUserIdAsync(string userId) => _localStorage.SetItemAsync("userId", userId);
 
-    public Task<string> GetUserIdAsync() => _localStorage.GetItemAsync<string>("userId").AsTask();
+    public ValueTask<string> GetUserIdAsync() => _localStorage.GetItemAsync<string>("userId");
 
     public async ValueTask<string> GetFullNameAsync()
     {

@@ -1,17 +1,21 @@
 ﻿@inherits LayoutComponentBase
 
 <div class="page">
-    <div class="sidebar">
-        <NavMenu />
-    </div>
-
     <main>
-        <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
-        </div>
+        @* Top Bar Component *@
+        <TopPart />
+
+        @* Extra spacing between TopBar and Cards *@
+        <div class="spacing"></div>
+
+        @* Cards Component with Categories *@
+        <Categories />
+
 
         <article class="content px-4">
             @Body
+
         </article>
     </main>
 </div>
+

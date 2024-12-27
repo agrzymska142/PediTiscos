@@ -46,6 +46,18 @@ namespace MAUI.Services
             return ValueTask.FromResult(fullName);
         }
 
+        public ValueTask SaveUserIdAsync(string userId)
+        {
+            Preferences.Set("userId", userId);
+            return ValueTask.CompletedTask;
+        }
+
+        public ValueTask<string> GetUserIdAsync()
+        {
+            var userId = Preferences.Get("userId", string.Empty);
+            return ValueTask.FromResult(userId);
+        }
+
         public ValueTask ClearTokenAsync()
         {
             Preferences.Remove("authToken");
@@ -54,6 +66,7 @@ namespace MAUI.Services
             Preferences.Remove("lastName");
 
             return ValueTask.CompletedTask;
+
         }
     }
 }
