@@ -17,7 +17,7 @@
         <div class="relative bg-white text-gray-800 border-none rounded-lg shadow-md p-5 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
             <div class="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg">FEATURED</div> <!-- Baner FEATURED -->
             <a href="product/@featuredProduct.ProductId" class="no-underline text-inherit">
-                <img src="https://via.placeholder.com/250" alt="@featuredProduct.Name" class="w-full h-auto rounded mb-4" /> <!-- Placeholder dla obrazu produktu -->
+                <img src="@featuredProduct.ImageUrl" alt="@featuredProduct.Name" class="w-full h-auto rounded mb-4" /> <!-- Wyświetlanie obrazu produktu -->
                 <div class="font-bold text-xl mb-2">@featuredProduct.Name</div> <!-- Nazwa produktu -->
                 <div class="text-gray-600 mb-2">@featuredProduct.Description</div> <!-- Opis produktu -->
                 <div class="text-blue-500 font-bold mb-2">Price: @featuredProduct.Price.ToString("C")</div> <!-- Cena produktu -->
@@ -121,6 +121,7 @@
         public int Stock { get; set; }
         public string CategoryName { get; set; }
         public int Quantity { get; set; }
+        public string? ImageUrl { get; set; } // New field for image URL
     }
 
     // Klasa DTO do dodania do koszyka
@@ -136,3 +137,4 @@
         public string Message { get; set; }
     }
 }
+
