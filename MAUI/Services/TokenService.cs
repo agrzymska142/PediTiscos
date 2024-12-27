@@ -6,11 +6,17 @@ namespace MAUI.Services
 {
     public class MauiTokenService : ITokenService
     {
-
+        private readonly ISessionStorageService _sessionStorage;
         public event Func<Task> OnUserLoggedIn;
-        public ValueTask SaveTokenAsync(string token)
+
+        public MauiTokenService(ISessionStorageService sessionStorage)
         {
-            Preferences.Set("authToken", token);
+            _sessionStorage = sessionStorage;
+        }
+
+        public async ValueTask SaveTokenAsync(string token)
+        {
+            await _sessionStorage.SetItemAsync("authToken", token);
 
             var handler = new JwtSecurityTokenHandler();
             var jwt = handler.ReadJwtToken(token);
@@ -19,54 +25,44 @@ namespace MAUI.Services
             var firstName = jwt.Claims.FirstOrDefault(c => c.Type == "given_name")?.Value;
             var lastName = jwt.Claims.FirstOrDefault(c => c.Type == "family_name")?.Value;
 
-            if (!string.IsNullOrEmpty(username)) Preferences.Set("username", username);
-            if (!string.IsNullOrEmpty(firstName)) Preferences.Set("firstName", firstName);
-            if (!string.IsNullOrEmpty(lastName)) Preferences.Set("lastName", lastName);
+            if (!string.IsNullOrEmpty(username)) await _sessionStorage.SetItemAsync("username", username);
+            if (!string.IsNullOrEmpty(firstName)) await _sessionStorage.SetItemAsync("firstName", firstName);
+            if (!string.IsNullOrEmpty(lastName)) await _sessionStorage.SetItemAsync("lastName", lastName);
 
-            return ValueTask.CompletedTask;
+            if (OnUserLoggedIn != null)
+            {
+                await OnUserLoggedIn.Invoke();
+            }
         }
 
-        public ValueTask<string> GetTokenAsync()
+        public async ValueTask<string> GetTokenAsync()
         {
-            var token = Preferences.Get("authToken", string.Empty);
-            return ValueTask.FromResult(token);
+            return await _sessionStorage.GetItemAsync<string>("authToken");
         }
 
-        public ValueTask<string> GetUsernameAsync()
+        public async ValueTask<string> GetUsernameAsync()
         {
-            var username = Preferences.Get("username", string.Empty);
-            return ValueTask.FromResult(username);
+            return await _sessionStorage.GetItemAsync<string>("username");
         }
 
-        public ValueTask<string> GetFullNameAsync()
+        public ValueTask SaveUserIdAsync(string userId) => _sessionStorage.SetItemAsync("userId", userId);
+
+        public ValueTask<string> GetUserIdAsync() => _sessionStorage.GetItemAsync<string>("userId");
+
+        public async ValueTask<string> GetFullNameAsync()
         {
-            var firstName = Preferences.Get("firstName", string.Empty);
-            var lastName = Preferences.Get("lastName", string.Empty);
-            var fullName = $"{firstName} {lastName}".Trim();
-            return ValueTask.FromResult(fullName);
+            var firstName = await _sessionStorage.GetItemAsync<string>("firstName");
+            var lastName = await _sessionStorage.GetItemAsync<string>("lastName");
+            return $"{firstName} {lastName}".Trim();
         }
 
-        public ValueTask SaveUserIdAsync(string userId)
+        public async ValueTask ClearTokenAsync()
         {
-            Preferences.Set("userId", userId);
-            return ValueTask.CompletedTask;
-        }
-
-        public ValueTask<string> GetUserIdAsync()
-        {
-            var userId = Preferences.Get("userId", string.Empty);
-            return ValueTask.FromResult(userId);
-        }
-
-        public ValueTask ClearTokenAsync()
-        {
-            Preferences.Remove("authToken");
-            Preferences.Remove("username");
-            Preferences.Remove("firstName");
-            Preferences.Remove("lastName");
-
-            return ValueTask.CompletedTask;
-
+            await _sessionStorage.RemoveItemAsync("authToken");
+            await _sessionStorage.RemoveItemAsync("userId");
+            await _sessionStorage.RemoveItemAsync("username");
+            await _sessionStorage.RemoveItemAsync("firstName");
+            await _sessionStorage.RemoveItemAsync("lastName");
         }
     }
 }

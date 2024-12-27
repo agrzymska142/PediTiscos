@@ -1,9 +1,8 @@
 ﻿@page "/cart"
 @inject HttpClient Http
 @using RCL.Data.DTO
-@using Blazored.LocalStorage
 @using RCL.Data.Interfaces
-@inject ILocalStorageService LocalStorage
+@inject ISessionStorageService SessionStorage
 @inject ITokenService TokenService
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -88,7 +87,7 @@
         try
         {
             var userId = await TokenService.GetUserIdAsync();
-            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
 
             var request = new HttpRequestMessage(HttpMethod.Get, "api/products/cart");
@@ -117,7 +116,7 @@
         try
         {
             var userId = await TokenService.GetUserIdAsync();
-            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
 
             var updateCartItemDto = new UpdateCartItemDto
@@ -151,7 +150,7 @@
         try
         {
             var userId = await TokenService.GetUserIdAsync();
-            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
 
             var request = new HttpRequestMessage(HttpMethod.Delete, $"api/products/RemoveFromCart/{productId}");
@@ -236,4 +235,3 @@
         });
     }
 }
-

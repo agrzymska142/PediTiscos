@@ -4,18 +4,17 @@ using RCL.Data.Interfaces;
 
 public class WebTokenService : ITokenService
 {
-    private readonly ILocalStorageService _localStorage;
+    private readonly ISessionStorageService _sessionStorage;
     public event Func<Task> OnUserLoggedIn;
 
-    public WebTokenService(ILocalStorageService localStorage)
+    public WebTokenService(ISessionStorageService sessionStorage)
     {
-        _localStorage = localStorage;
+        _sessionStorage = sessionStorage;
     }
-
 
     public async ValueTask SaveTokenAsync(string token)
     {
-        await _localStorage.SetItemAsync("authToken", token);
+        await _sessionStorage.SetItemAsync("authToken", token);
 
         var handler = new JwtSecurityTokenHandler();
         var jwt = handler.ReadJwtToken(token);
@@ -24,9 +23,9 @@ public class WebTokenService : ITokenService
         var firstName = jwt.Claims.FirstOrDefault(c => c.Type == "name")?.Value;
         var lastName = jwt.Claims.FirstOrDefault(c => c.Type == "surname")?.Value;
 
-        if (!string.IsNullOrEmpty(username)) await _localStorage.SetItemAsync("username", username);
-        if (!string.IsNullOrEmpty(firstName)) await _localStorage.SetItemAsync("firstName", firstName);
-        if (!string.IsNullOrEmpty(lastName)) await _localStorage.SetItemAsync("lastName", lastName);
+        if (!string.IsNullOrEmpty(username)) await _sessionStorage.SetItemAsync("username", username);
+        if (!string.IsNullOrEmpty(firstName)) await _sessionStorage.SetItemAsync("firstName", firstName);
+        if (!string.IsNullOrEmpty(lastName)) await _sessionStorage.SetItemAsync("lastName", lastName);
 
         if (OnUserLoggedIn != null)
         {
@@ -36,31 +35,31 @@ public class WebTokenService : ITokenService
 
     public async ValueTask<string> GetTokenAsync()
     {
-        return await _localStorage.GetItemAsync<string>("authToken");
+        return await _sessionStorage.GetItemAsync<string>("authToken");
     }
 
     public async ValueTask<string> GetUsernameAsync()
     {
-        return await _localStorage.GetItemAsync<string>("username");
+        return await _sessionStorage.GetItemAsync<string>("username");
     }
 
-    public ValueTask SaveUserIdAsync(string userId) => _localStorage.SetItemAsync("userId", userId);
+    public ValueTask SaveUserIdAsync(string userId) => _sessionStorage.SetItemAsync("userId", userId);
 
-    public ValueTask<string> GetUserIdAsync() => _localStorage.GetItemAsync<string>("userId");
+    public ValueTask<string> GetUserIdAsync() => _sessionStorage.GetItemAsync<string>("userId");
 
     public async ValueTask<string> GetFullNameAsync()
     {
-        var firstName = await _localStorage.GetItemAsync<string>("firstName");
-        var lastName = await _localStorage.GetItemAsync<string>("lastName");
+        var firstName = await _sessionStorage.GetItemAsync<string>("firstName");
+        var lastName = await _sessionStorage.GetItemAsync<string>("lastName");
         return $"{firstName} {lastName}".Trim();
     }
 
     public async ValueTask ClearTokenAsync()
     {
-        await _localStorage.RemoveItemAsync("authToken");
-        await _localStorage.RemoveItemAsync("userId");
-        await _localStorage.RemoveItemAsync("username");
-        await _localStorage.RemoveItemAsync("firstName");
-        await _localStorage.RemoveItemAsync("lastName");
+        await _sessionStorage.RemoveItemAsync("authToken");
+        await _sessionStorage.RemoveItemAsync("userId");
+        await _sessionStorage.RemoveItemAsync("username");
+        await _sessionStorage.RemoveItemAsync("firstName");
+        await _sessionStorage.RemoveItemAsync("lastName");
     }
 }

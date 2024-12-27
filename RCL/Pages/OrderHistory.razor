@@ -1,9 +1,8 @@
 ﻿@page "/order-history"
 @inject HttpClient Http
-@using Blazored.LocalStorage
 @using RCL.Data.DTO
 @using RCL.Data.Interfaces
-@inject ILocalStorageService LocalStorage
+@inject ISessionStorageService SessionStorage
 @inject ITokenService TokenService
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -88,8 +87,11 @@
         try
         {
             var userId = await TokenService.GetUserIdAsync();
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
+            var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
+
             var request = new HttpRequestMessage(HttpMethod.Get, "api/products/order-history");
-            request.Headers.Add("sessionId", userId);
+            request.Headers.Add("sessionId", userIdentifier);
 
             var response = await Http.SendAsync(request);
 
@@ -113,9 +115,7 @@
     {
         order.ShowDetails = !order.ShowDetails;
     }
-}
 
-@code {
     public class OrderDto
     {
         public string UserId { get; set; }
@@ -136,7 +136,3 @@
         public decimal UnitPrice { get; set; }
     }
 }
-
-
-
-

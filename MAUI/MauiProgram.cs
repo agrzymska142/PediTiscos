@@ -20,6 +20,7 @@ namespace MAUI
 
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") }); // Backend base URL
             builder.Services.AddSingleton<ITokenService, MauiTokenService>();
+            builder.Services.AddSingleton<ISessionStorageService, MauiSessionStorageService>();
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools(); 

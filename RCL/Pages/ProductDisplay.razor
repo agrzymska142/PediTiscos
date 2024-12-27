@@ -2,9 +2,8 @@
 @inject HttpClient Http
 @using System.Net.Http.Json
 @using RCL.Data.DTO
-@using Blazored.LocalStorage
 @using RCL.Data.Interfaces
-@inject ILocalStorageService LocalStorage
+@inject ISessionStorageService SessionStorage
 @inject ITokenService TokenService
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
@@ -104,11 +103,11 @@
             }
             products = await Http.GetFromJsonAsync<List<ProductDTO>>(query);
 
-            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             if (string.IsNullOrEmpty(sessionId))
             {
                 sessionId = Guid.NewGuid().ToString();
-                await LocalStorage.SetItemAsync("sessionId", sessionId);
+                await SessionStorage.SetItemAsync("sessionId", sessionId);
             }
         }
         catch (Exception ex)
@@ -127,7 +126,7 @@
         try
         {
             var userId = await TokenService.GetUserIdAsync();
-            var sessionId = await LocalStorage.GetItemAsync<string>("sessionId");
+            var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
 
             var addToCartDto = new AddToCartDto
