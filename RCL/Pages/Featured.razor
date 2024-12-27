@@ -6,7 +6,15 @@
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
+@* Extra spacing between TopBar and Cards *@
+<div class="spacing"></div>
+
+@* Cards Component with Categories *@
+<Categories />
+
 <div class="flex justify-center my-10">
+
+
     @if (featuredProduct == null)
     {
         <p>Loading featured product...</p> <!-- Wyświetl komunikat ładowania, jeśli produkt wyróżniony jest null -->

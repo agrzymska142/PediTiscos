@@ -8,6 +8,12 @@
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
+@* Extra spacing between TopBar and Cards *@
+<div class="spacing"></div>
+
+@* Cards Component with Categories *@
+<Categories />
+
 <nav class="p-5 bg-yellow-100 text-gray-800">
     <div class="flex items-center justify-center gap-4 mb-5">
         <input type="text" placeholder="Search products..." @bind="searchTerm" class="p-2 border border-gray-300 rounded" />
