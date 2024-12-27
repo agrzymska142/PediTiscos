@@ -12,8 +12,6 @@
     </div>
     <nav class="flex items-center space-x-5">
         <a href="/products" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-box-open"></i> Products</a>
-        @* <a href="#" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-info-circle"></i> About us</a>
-        <a href="#" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-envelope"></i> Contact</a> *@
         <a href="/cart" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-shopping-cart"></i> Cart</a>
         @if (string.IsNullOrEmpty(fullName))
         {
@@ -33,48 +31,56 @@
     private string fullName;
     private bool isInitialized;
 
-
-
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         if (firstRender && !isInitialized)
         {
-            // Subskrybuj zmiany w TokenService
+            // Subscribe to token service events
             TokenService.OnUserLoggedIn += HandleUserLoggedIn;
 
-            // Inicjalizuj fullName, jeśli użytkownik jest już zalogowany
-            fullName = await TokenService.GetFullNameAsync();
-
-            // Set the token in HttpClient for subsequent requests
+            // Validate the token and initialize fullName if valid
             var token = await TokenService.GetTokenAsync();
-            if (!string.IsNullOrEmpty(token))
+            if (!string.IsNullOrEmpty(token) && await TokenService.IsTokenValidAsync(token))
             {
                 Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+                fullName = await TokenService.GetFullNameAsync();
+            }
+            else
+            {
+                await TokenService.ClearTokenAsync(); // Clear any invalid token
+                fullName = null;
             }
 
-            isInitialized = true; // Upewnij się, że inicjalizacja odbywa się tylko raz
+            isInitialized = true; // Ensure initialization happens only once
             StateHasChanged();
         }
     }
 
     private async Task HandleUserLoggedIn()
     {
-        fullName = await TokenService.GetFullNameAsync();
+        var token = await TokenService.GetTokenAsync();
+        if (!string.IsNullOrEmpty(token) && await TokenService.IsTokenValidAsync(token))
+        {
+            fullName = await TokenService.GetFullNameAsync();
+        }
+        else
+        {
+            fullName = null;
+        }
         StateHasChanged();
     }
 
     private async Task Logout()
     {
-        await TokenService.ClearTokenAsync(); // Wyczyść przechowywany token
-        fullName = null; // Zresetuj pełne imię użytkownika
+        await TokenService.ClearTokenAsync(); // Clear stored token
+        fullName = null; // Reset user information
         StateHasChanged();
-        Navigation.NavigateTo("/login"); // Przekieruj na stronę logowania
+        Navigation.NavigateTo("/login"); // Redirect to login page
     }
 
     public void Dispose()
     {
-        // Anuluj subskrypcję zdarzenia, gdy komponent jest usuwany
+        // Unsubscribe from the event when the component is disposed
         TokenService.OnUserLoggedIn -= HandleUserLoggedIn;
     }
 }
-

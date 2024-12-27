@@ -14,6 +14,7 @@ namespace RCL.Data.Interfaces
         ValueTask<string> GetFullNameAsync();
         ValueTask SaveUserIdAsync(string userId);
         ValueTask<string> GetUserIdAsync();
+        ValueTask<bool> IsTokenValidAsync(string token);
         ValueTask ClearTokenAsync();
         event Func<Task> OnUserLoggedIn;
     }

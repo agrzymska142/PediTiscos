@@ -2,6 +2,7 @@ using Blazor.Components;
 using Blazor.Services;
 using Blazored.LocalStorage;
 using RCL.Data.Interfaces;
+using RCL.Data.Services;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +15,8 @@ builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https:/
 builder.Services.AddScoped<ITokenService, WebTokenService>();
 builder.Services.AddScoped<ISessionStorageService, BlazorSessionStorageService>();
 builder.Services.AddBlazoredLocalStorage();
+builder.Services.AddScoped<TokenExpirationHandler>();
+
 
 var app = builder.Build();
 

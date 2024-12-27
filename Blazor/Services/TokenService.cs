@@ -54,6 +54,28 @@ public class WebTokenService : ITokenService
         return $"{firstName} {lastName}".Trim();
     }
 
+    public async ValueTask<bool> IsTokenValidAsync(string token)
+    {
+        try
+        {
+            var jwtHandler = new JwtSecurityTokenHandler();
+            if (!jwtHandler.CanReadToken(token))
+            {
+                return false;
+            }
+
+            var jwtToken = jwtHandler.ReadJwtToken(token);
+            var expiration = jwtToken.ValidTo;
+
+            // Check if the token is expired
+            return expiration > DateTime.UtcNow;
+        }
+        catch
+        {
+            return false; // Treat any exception as an invalid token
+        }
+    }
+
     public async ValueTask ClearTokenAsync()
     {
         await _sessionStorage.RemoveItemAsync("authToken");

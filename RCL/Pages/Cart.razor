@@ -2,8 +2,10 @@
 @inject HttpClient Http
 @using RCL.Data.DTO
 @using RCL.Data.Interfaces
+@using RCL.Data.Services
 @inject ISessionStorageService SessionStorage
 @inject ITokenService TokenService
+@inject TokenExpirationHandler TokenExpirationHandler
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 
@@ -108,6 +110,7 @@
             }
             else
             {
+                await TokenExpirationHandler.HandleTokenErrorAsync(response);
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error fetching cart items: {error}");
             }
@@ -142,6 +145,7 @@
 
             if (!response.IsSuccessStatusCode)
             {
+                await TokenExpirationHandler.HandleTokenErrorAsync(response);
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error updating cart item: {error}");
             }
@@ -171,6 +175,7 @@
             }
             else
             {
+                await TokenExpirationHandler.HandleTokenErrorAsync(response);
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error removing cart item: {error}");
             }
@@ -206,6 +211,7 @@
             }
             else
             {
+                await TokenExpirationHandler.HandleTokenErrorAsync(response);
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error placing order: {error}");
                 ShowErrorToast($"Error placing order: {error}");
