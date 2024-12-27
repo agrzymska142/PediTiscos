@@ -22,57 +22,88 @@
     }
     else
     {
-        <table class="min-w-full bg-white rounded-lg shadow-md">
-            <thead>
-                <tr>
-                    <th class="py-3 px-4 bg-blue-500 text-white">Date</th>
-                    <th class="py-3 px-4 bg-blue-500 text-white">Total Amount</th>
-                    <th class="py-3 px-4 bg-blue-500 text-white">Status</th>
-                    <th class="py-3 px-4 bg-blue-500 text-white">Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var order in orders)
-                {
-                    <tr class="border-b border-gray-200">
-                        <td class="py-3 px-4">@order.OrderDate.ToString("g")</td>
-                        <td class="py-3 px-4">@order.TotalAmount.ToString("C2")</td>
-                        <td class="py-3 px-4">@order.Status</td>
-                        <td class="py-3 px-4">
-                            <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" @onclick="() => ToggleOrderDetails(order)">Show Order Details</button>
-                        </td>
+        <div class="hidden md:block">
+            <table class="min-w-full bg-white rounded-lg shadow-md">
+                <thead>
+                    <tr>
+                        <th class="py-3 px-4 bg-blue-500 text-white">Date</th>
+                        <th class="py-3 px-4 bg-blue-500 text-white">Total Amount</th>
+                        <th class="py-3 px-4 bg-blue-500 text-white">Status</th>
+                        <th class="py-3 px-4 bg-blue-500 text-white">Actions</th>
                     </tr>
-                    @if (order.ShowDetails)
+                </thead>
+                <tbody>
+                    @foreach (var order in orders)
                     {
                         <tr class="border-b border-gray-200">
-                            <td colspan="4">
-                                <table class="min-w-full bg-gray-100 rounded-lg shadow-md mt-2">
-                                    <thead>
-                                        <tr>
-                                            <th class="py-2 px-4 bg-gray-300 text-gray-800">Product Name</th>
-                                            <th class="py-2 px-4 bg-gray-300 text-gray-800">Quantity</th>
-                                            <th class="py-2 px-4 bg-gray-300 text-gray-800">Unit Price</th>
-                                            <th class="py-2 px-4 bg-gray-300 text-gray-800">Total Price</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        @foreach (var detail in order.OrderDetails)
-                                        {
-                                            <tr>
-                                                <td class="py-2 px-4">@detail.ProductName</td>
-                                                <td class="py-2 px-4">@detail.Quantity</td>
-                                                <td class="py-2 px-4">@detail.UnitPrice.ToString("C2")</td>
-                                                <td class="py-2 px-4">@((detail.UnitPrice * detail.Quantity).ToString("C2"))</td>
-                                            </tr>
-                                        }
-                                    </tbody>
-                                </table>
+                            <td class="py-3 px-4">@order.OrderDate.ToString("g")</td>
+                            <td class="py-3 px-4">@order.TotalAmount.ToString("C2")</td>
+                            <td class="py-3 px-4">@order.Status</td>
+                            <td class="py-3 px-4">
+                                <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" @onclick="() => ToggleOrderDetails(order)">Show Order Details</button>
                             </td>
                         </tr>
+                        @if (order.ShowDetails)
+                        {
+                            <tr class="border-b border-gray-200">
+                                <td colspan="4">
+                                    <table class="min-w-full bg-gray-100 rounded-lg shadow-md mt-2">
+                                        <thead>
+                                            <tr>
+                                                <th class="py-2 px-4 bg-gray-300 text-gray-800">Product Name</th>
+                                                <th class="py-2 px-4 bg-gray-300 text-gray-800">Quantity</th>
+                                                <th class="py-2 px-4 bg-gray-300 text-gray-800">Unit Price</th>
+                                                <th class="py-2 px-4 bg-gray-300 text-gray-800">Total Price</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var detail in order.OrderDetails)
+                                            {
+                                                <tr>
+                                                    <td class="py-2 px-4">@detail.ProductName</td>
+                                                    <td class="py-2 px-4">@detail.Quantity</td>
+                                                    <td class="py-2 px-4">@detail.UnitPrice.ToString("C2")</td>
+                                                    <td class="py-2 px-4">@((detail.UnitPrice * detail.Quantity).ToString("C2"))</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </td>
+                            </tr>
+                        }
                     }
-                }
-            </tbody>
-        </table>
+                </tbody>
+            </table>
+        </div>
+        <div class="md:hidden">
+            @foreach (var order in orders)
+            {
+                <div class="bg-white rounded-lg shadow-md p-4 mb-4">
+                    <div class="flex justify-between items-center">
+                        <div>
+                            <p class="font-bold">@order.OrderDate.ToString("g")</p>
+                            <p>@order.TotalAmount.ToString("C2")</p>
+                            <p>@order.Status</p>
+                        </div>
+                        <button class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700" @onclick="() => ToggleOrderDetails(order)">Show Details</button>
+                    </div>
+                    @if (order.ShowDetails)
+                    {
+                        <div class="mt-4">
+                            @foreach (var detail in order.OrderDetails)
+                            {
+                                <div class="bg-gray-100 rounded-lg p-2 mb-2">
+                                    <p class="font-bold">@detail.ProductName</p>
+                                    <p>Quantity: @detail.Quantity</p>
+                                    <p>Unit Price: @detail.UnitPrice.ToString("C2")</p>
+                                    <p>Total Price: @((detail.UnitPrice * detail.Quantity).ToString("C2"))</p>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            }
+        </div>
     }
 </div>
 
@@ -143,3 +174,4 @@
         public decimal UnitPrice { get; set; }
     }
 }
+

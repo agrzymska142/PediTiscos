@@ -1,16 +1,43 @@
-﻿@using RCL.Data.Interfaces
+﻿@page "/top-part"
+@using RCL.Data.Interfaces
 @inject ITokenService TokenService
 @inject NavigationManager Navigation
 @inject HttpClient Http
 
-<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+</head>
 
 <div class="bg-blue-500 text-white h-16 flex items-center justify-between px-5 shadow-md">
     <div class="text-2xl font-bold">
         <a href="/" class="hover:text-gray-200 transition-colors duration-300">PediTiscos</a>
     </div>
-    <nav class="flex items-center space-x-5">
+    <nav class="hidden md:flex items-center space-x-5">
+        <a href="/products" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-box-open"></i> Products</a>
+        <a href="/cart" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-shopping-cart"></i> Cart</a>
+        @if (string.IsNullOrEmpty(fullName))
+        {
+            <a href="/login" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-sign-in-alt"></i> Login</a>
+            <a href="/register" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-user-plus"></i> Register</a>
+        }
+        else
+        {
+            <span>Welcome, @fullName</span>
+            <a href="/order-history" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-history"></i> Order History</a>
+            <a href="#" @onclick="Logout" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-sign-out-alt"></i> Logout</a>
+        }
+    </nav>
+    <div class="md:hidden">
+        <button @onclick="ToggleMenu" class="text-white focus:outline-none">
+            <i class="fas fa-bars"></i>
+        </button>
+    </div>
+</div>
+
+<div class="md:hidden" style="display: @(isMenuOpen ? "block" : "none")">
+    <nav class="flex flex-col items-center space-y-5 bg-blue-500 text-white p-5">
         <a href="/products" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-box-open"></i> Products</a>
         <a href="/cart" class="hover:text-gray-200 transition-colors duration-300"><i class="fas fa-shopping-cart"></i> Cart</a>
         @if (string.IsNullOrEmpty(fullName))
@@ -30,6 +57,7 @@
 @code {
     private string fullName;
     private bool isInitialized;
+    private bool isMenuOpen = false;
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
@@ -76,6 +104,11 @@
         fullName = null; // Reset user information
         StateHasChanged();
         Navigation.NavigateTo("/login"); // Redirect to login page
+    }
+
+    private void ToggleMenu()
+    {
+        isMenuOpen = !isMenuOpen;
     }
 
     public void Dispose()
