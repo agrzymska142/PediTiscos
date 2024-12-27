@@ -16,20 +16,33 @@
     }
     else
     {
-        <div class="bg-white text-gray-800 border-none rounded-lg shadow-lg p-8 max-w-lg w-full text-center transition-transform transform hover:-translate-y-2 hover:shadow-2xl">
+        <div class="relative bg-white text-gray-800 border-none rounded-lg shadow-lg p-8 max-w-lg w-full text-center transition-transform transform hover:-translate-y-2 hover:shadow-2xl">
+            @if (!product.IsActive)
+            {
+                <div class="absolute top-0 left-0 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg">UNAVAILABLE</div> <!-- Baner UNAVAILABLE -->
+                <div class="absolute inset-0 bg-gray-500 opacity-50 rounded-lg"></div> <!-- Szara nakładka -->
+            }
+            @if (product.Stock == 0)
+            {
+                <div class="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg">SOLD OUT</div> <!-- Baner SOLD OUT -->
+                <div class="absolute inset-0 bg-red-500 opacity-50 rounded-lg"></div> <!-- Czerwona nakładka -->
+            }
             <div class="mb-6">
                 <h3 class="text-3xl font-bold text-gray-900">@product.Name</h3> <!-- Nazwa produktu -->
             </div>
             <div class="mb-6">
-                <img src="https://via.placeholder.com/300" alt="@product.Name" class="w-full h-auto rounded-lg mb-4" /> <!-- Placeholder dla obrazu produktu -->
+                <img src="@product.ImageUrl" alt="@product.Name" class="w-full h-auto rounded-lg mb-4" /> <!-- Wyświetlanie obrazu produktu -->
                 <p class="text-lg text-gray-700 mb-4">@product.Description</p> <!-- Opis produktu -->
                 <p class="text-2xl text-blue-600 font-bold mb-4"><strong>Price:</strong> @product.Price.ToString("C")</p> <!-- Cena produktu -->
                 <p class="text-xl text-green-600 mb-4"><strong>Stock:</strong> @product.Stock</p> <!-- Stan magazynowy produktu -->
-                <div class="flex items-center justify-center mb-4">
-                    <label for="quantity-@product.ProductId" class="mr-2">Quantity:</label> <!-- Etykieta dla ilości -->
-                    <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" class="w-16 p-1 border border-gray-300 rounded" /> <!-- Pole wprowadzania ilości -->
-                </div>
-                <button @onclick="() => AddToCart(product)" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Add to cart</button> <!-- Przycisk dodawania do koszyka -->
+                @if (product.IsActive && product.Stock > 0)
+                {
+                    <div class="flex items-center justify-center mb-4">
+                        <label for="quantity-@product.ProductId" class="mr-2">Quantity:</label> <!-- Etykieta dla ilości -->
+                        <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" class="w-16 p-1 border border-gray-300 rounded" /> <!-- Pole wprowadzania ilości -->
+                    </div>
+                    <button @onclick="() => AddToCart(product)" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Add to cart</button> <!-- Przycisk dodawania do koszyka -->
+                }
             </div>
         </div>
     }
@@ -130,4 +143,3 @@
         public string Message { get; set; }
     }
 }
-

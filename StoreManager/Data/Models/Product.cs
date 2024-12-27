@@ -27,5 +27,9 @@ namespace StoreManager.Data.Models
 
         // Navigation Property
         public Category Category { get; set; }
+
+        public bool IsActive { get; set; } = true;
+
+        public string? ImageUrl { get; set; }
     }
 }

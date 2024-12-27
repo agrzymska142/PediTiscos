@@ -22,6 +22,7 @@
             <th>Price</th>
             <th>Stock</th>
             <th>Category</th>
+            <th>Active</th>
             <th>Actions</th>
         </tr>
     </thead>
@@ -34,6 +35,9 @@
                 <td>@product.Price.ToString("C")</td>
                 <td>@product.Stock</td>
                 <td>@product.Category?.Name</td>
+                <td>
+                    <input type="checkbox" checked="@product.IsActive" @onchange="(e) => ToggleProductActive(product, e.Value)" />
+                </td>
                 <td>
                     <button class="btn btn-secondary" @onclick="() => EditProduct(product.ProductId)">Edit</button>
                     <button class="btn btn-danger" @onclick="() => DeleteProduct(product.ProductId)">Delete</button>
@@ -64,5 +68,14 @@
     private void DeleteProduct(int id)
     {
         NavManager.NavigateTo($"/products/delete/{id}");
+    }
+
+    private async Task ToggleProductActive(Product product, object value)
+    {
+        if (value is bool isActive)
+        {
+            product.IsActive = isActive;
+            await DbContext.SaveChangesAsync();
+        }
     }
 }

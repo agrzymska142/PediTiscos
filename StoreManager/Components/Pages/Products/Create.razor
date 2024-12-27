@@ -40,6 +40,10 @@
             }
         </InputSelect>
     </div>
+    <div>
+        <label>Image URL:</label>
+        <InputText @bind-Value="NewProduct.ImageUrl" class="form-control" />
+    </div>
     <button type="submit" class="btn btn-primary">Create</button>
     <button class="btn btn-secondary" @onclick="Cancel">Cancel</button>
 </EditForm>

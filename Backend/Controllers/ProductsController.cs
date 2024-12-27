@@ -49,7 +49,9 @@ public class ProductsController : ControllerBase
             Description = p.Description,
             Price = p.Price,
             Stock = p.Stock,
-            CategoryName = p.Category?.Name
+            CategoryName = p.Category?.Name,
+            IsActive = p.IsActive,
+            ImageUrl = p.ImageUrl
         }).ToList();
 
         return Ok(productDtos);
@@ -73,7 +75,9 @@ public class ProductsController : ControllerBase
             Description = product.Description,
             Price = product.Price,
             Stock = product.Stock,
-            CategoryName = product.Category?.Name
+            CategoryName = product.Category?.Name,
+            IsActive = product.IsActive,
+            ImageUrl = product.ImageUrl
         };
 
         return Ok(productDto);
