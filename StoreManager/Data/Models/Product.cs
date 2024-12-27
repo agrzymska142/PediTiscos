@@ -29,5 +29,7 @@ namespace StoreManager.Data.Models
         public Category Category { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public string? ImageUrl { get; set; }
     }
 }

@@ -44,7 +44,7 @@
                     <div class="absolute inset-0 bg-red-500 opacity-50 rounded-lg"></div> <!-- Czerwona nakładka -->
                     }
                     <a href="product/@product.ProductId" class="no-underline text-inherit">
-                        <img src="https://via.placeholder.com/250" alt="@product.Name" class="w-full h-auto rounded mb-4" />
+                        <img src="@product.ImageUrl" alt="@product.Name" class="w-full h-auto rounded mb-4" /> <!-- Wyświetlanie obrazu produktu -->
                         <div class="font-bold text-xl mb-2">@product.Name</div>
                         <div class="text-gray-600 mb-2">@product.Description</div>
                         <div class="text-blue-500 font-bold mb-2">Price: @product.Price.ToString("C")</div>

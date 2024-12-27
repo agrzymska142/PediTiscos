@@ -18,5 +18,7 @@ namespace RCL.Data.DTO
         public int Quantity { get; set; } = 1;
 
         public bool IsActive { get; set; }
+
+        public string? ImageUrl { get; set; }
     }
 }
