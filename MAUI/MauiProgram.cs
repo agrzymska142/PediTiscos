@@ -22,9 +22,7 @@ namespace MAUI
             builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri("https://localhost:7255") }); // Backend base URL
             builder.Services.AddSingleton<ITokenService, MauiTokenService>();
             builder.Services.AddSingleton<ISessionStorageService, MauiSessionStorageService>();
-            builder.Services.AddHttpClient("AuthenticatedClient")
-                .AddHttpMessageHandler<TokenExpirationHandler>();
-            builder.Services.AddTransient<TokenExpirationHandler>();
+            builder.Services.AddScoped<TokenExpirationHandler>();
 
 
 #if DEBUG

@@ -100,6 +100,10 @@
             if (response.IsSuccessStatusCode)
             {
                 orders = await response.Content.ReadFromJsonAsync<List<OrderDto>>();
+                if (orders != null)
+                {
+                    orders = orders.OrderByDescending(order => order.OrderDate).ToList();
+                }
             }
             else
             {
