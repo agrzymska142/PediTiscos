@@ -16,5 +16,7 @@ namespace RCL.Data.DTO
         public string? CategoryName { get; set; }
 
         public int Quantity { get; set; } = 1;
+
+        public bool IsActive { get; set; }
     }
 }

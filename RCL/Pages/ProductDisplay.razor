@@ -32,7 +32,17 @@
         <div class="flex flex-wrap justify-center gap-5 mt-5">
             @foreach (var product in products)
             {
-                <div class="bg-white text-gray-800 border-none rounded-lg shadow-md p-5 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+                <div class="relative bg-white text-gray-800 border-none rounded-lg shadow-md p-5 w-64 text-center transition-transform transform hover:-translate-y-1 hover:shadow-lg">
+                    @if (!product.IsActive)
+                    {
+                        <div class="absolute top-0 left-0 bg-gray-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg">UNAVAILABLE</div> <!-- Baner UNAVAILABLE -->
+                        <div class="absolute inset-0 bg-gray-500 opacity-50 rounded-lg"></div> <!-- Szara nakładka -->
+                    }
+                    @if (product.Stock == 0)
+                    {
+                    <div class="absolute top-0 left-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-br-lg">SOLD OUT</div> <!-- Baner SOLD OUT -->
+                    <div class="absolute inset-0 bg-red-500 opacity-50 rounded-lg"></div> <!-- Czerwona nakładka -->
+                    }
                     <a href="product/@product.ProductId" class="no-underline text-inherit">
                         <img src="https://via.placeholder.com/250" alt="@product.Name" class="w-full h-auto rounded mb-4" />
                         <div class="font-bold text-xl mb-2">@product.Name</div>
@@ -40,11 +50,14 @@
                         <div class="text-blue-500 font-bold mb-2">Price: @product.Price.ToString("C")</div>
                         <div class="text-green-500 mb-4">Stock: @product.Stock</div>
                     </a>
-                    <div class="flex items-center justify-center mb-4">
-                        <label for="quantity-@product.ProductId" class="mr-2">Quantity:</label>
-                        <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" class="w-16 p-1 border border-gray-300 rounded" />
-                    </div>
-                    <button @onclick="() => AddToCart(product)" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Add to cart</button>
+                    @if (product.IsActive && product.Stock > 0)
+                    {
+                        <div class="flex items-center justify-center mb-4">
+                            <label for="quantity-@product.ProductId" class="mr-2">Quantity:</label>
+                            <input type="number" id="quantity-@product.ProductId" @bind="product.Quantity" min="1" max="@product.Stock" class="w-16 p-1 border border-gray-300 rounded" />
+                        </div>
+                        <button @onclick="() => AddToCart(product)" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-700">Add to cart</button>
+                    }
                 </div>
             }
         </div>
@@ -157,4 +170,3 @@
         });
     }
 }
-
