@@ -3,6 +3,7 @@ using Blazor.Services;
 using Blazored.LocalStorage;
 using RCL.Data.Interfaces;
 using RCL.Data.Services;
+using RCL.Pages;
 
 
 var builder = WebApplication.CreateBuilder(args);
