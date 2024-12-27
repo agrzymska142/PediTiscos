@@ -1,6 +1,7 @@
 ﻿@using RCL.Data.Interfaces
 @inject ITokenService TokenService
 @inject NavigationManager Navigation
+@inject HttpClient Http
 
 <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -48,6 +49,13 @@
 
             // Inicjalizuj fullName, jeśli użytkownik jest już zalogowany
             fullName = await TokenService.GetFullNameAsync();
+
+            // Set the token in HttpClient for subsequent requests
+            var token = await TokenService.GetTokenAsync();
+            if (!string.IsNullOrEmpty(token))
+            {
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
 
             isInitialized = true; // Upewnij się, że inicjalizacja odbywa się tylko raz
             StateHasChanged();

@@ -90,6 +90,13 @@
             var sessionId = await SessionStorage.GetItemAsync<string>("sessionId");
             var userIdentifier = !string.IsNullOrEmpty(userId) ? userId : sessionId;
 
+            // Set the token in HttpClient for subsequent requests
+            var token = await TokenService.GetTokenAsync();
+            if (!string.IsNullOrEmpty(token))
+            {
+                Http.DefaultRequestHeaders.Authorization = new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+            }
+
             var request = new HttpRequestMessage(HttpMethod.Get, "api/products/cart");
             request.Headers.Add("sessionId", userIdentifier);
 
