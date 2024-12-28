@@ -16,11 +16,13 @@ public class CategoriesController : ControllerBase
         _context = context;
     }
 
-    // Get all categories
+    // Pobieranie wszystkich kategorii
     [HttpGet]
     public async Task<IActionResult> GetAll()
     {
+        // Pobieranie listy kategorii z bazy danych
         var categories = await _context.Categories.ToListAsync();
+        // Mapowanie kategorii na DTO
         var categoryDtos = categories.Select(c => new CategoryDto
         {
             CategoryId = c.CategoryId,

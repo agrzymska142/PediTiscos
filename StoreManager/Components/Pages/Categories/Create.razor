@@ -30,25 +30,31 @@
 @code {
     private Category NewCategory = new();
 
+    // Metoda obsługująca tworzenie nowej kategorii
     private async Task HandleCreate()
     {
-        // Logging for debugging
+        // Logowanie do debugowania
         Console.WriteLine($"Name: {NewCategory.Name}, Description: {NewCategory.Description}");
 
-        // Validation check for debugging purposes
+        // Sprawdzenie walidacji dla celów debugowania
         if (string.IsNullOrWhiteSpace(NewCategory.Name))
         {
             Console.WriteLine("Name is missing or invalid.");
             return;
         }
 
+        // Dodanie nowej kategorii do bazy danych
         DbContext.Categories.Add(NewCategory);
         await DbContext.SaveChangesAsync();
+        // Nawigacja do strony z listą kategorii
         NavManager.NavigateTo("/categories");
     }
 
+    // Metoda anulująca tworzenie nowej kategorii
     private void Cancel()
     {
+        // Nawigacja do strony z listą kategorii
         NavManager.NavigateTo("/categories");
     }
 }
+

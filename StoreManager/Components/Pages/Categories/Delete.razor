@@ -21,28 +21,38 @@
     [Parameter] public int CategoryId { get; set; }
     private Category? Category;
 
+    // Metoda wywoływana podczas inicjalizacji komponentu
     protected override async Task OnInitializedAsync()
     {
+        // Pobieranie kategorii z bazy danych na podstawie CategoryId
         Category = await DbContext.Categories.FindAsync(CategoryId);
 
+        // Jeśli kategoria nie istnieje, nawiguj do listy kategorii
         if (Category == null)
         {
             NavManager.NavigateTo("/categories");
         }
     }
 
+    // Metoda obsługująca usunięcie kategorii
     private async Task HandleDelete()
     {
         if (Category != null)
         {
+            // Usunięcie kategorii z bazy danych
             DbContext.Categories.Remove(Category);
             await DbContext.SaveChangesAsync();
         }
+        // Nawigacja do strony z listą kategorii
         NavManager.NavigateTo("/categories");
     }
 
+    // Metoda anulująca usunięcie kategorii
     private void Cancel()
     {
+        // Nawigacja do strony z listą kategorii
         NavManager.NavigateTo("/categories");
     }
 }
+
+
