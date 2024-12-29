@@ -138,7 +138,21 @@ else
                         UserId = User.Id,
                         RoleId = role.Id
                     });
+
+                // Set Status based on the selected role
+                if (SelectedRole == "Customer")
+                {
+                    User.Status = UserStatus.Pending; // Set Status to 0
+                }
+                else
+                {
+                    User.Status = null; // Set Status to null
+                }
             }
+        }
+        else
+        {
+            User.Status = null; // Default to null if no role is selected
         }
 
         await DbContext.SaveChangesAsync();
@@ -146,6 +160,7 @@ else
         // Navigate back to users page
         NavManager.NavigateTo("/users");
     }
+
 
     private void Cancel()
     {
