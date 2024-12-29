@@ -41,21 +41,26 @@
 @code {
     private List<Category> Categories = new();
 
+    // Metoda wywoływana podczas inicjalizacji komponentu
     protected override async Task OnInitializedAsync()
     {
+        // Pobieranie listy kategorii z bazy danych
         Categories = await DbContext.Categories.ToListAsync();
     }
 
+    // Metoda nawigująca do strony tworzenia nowej kategorii
     private void CreateCategory()
     {
         NavManager.NavigateTo("categories/create");
     }
 
+    // Metoda nawigująca do strony edycji wybranej kategorii
     private void EditCategory(int id)
     {
         NavManager.NavigateTo($"/categories/edit/{id}");
     }
 
+    // Metoda nawigująca do strony usuwania wybranej kategorii
     private void DeleteCategory(int id)
     {
         NavManager.NavigateTo($"/categories/delete/{id}");

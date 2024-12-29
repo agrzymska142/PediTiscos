@@ -17,7 +17,7 @@ public class ProductsController : ControllerBase
         _context = context;
     }
 
-    // 1. GET /api/Products: Retrieve a list of all products with filtering and searching
+    //Pobierz listę wszystkich produktów z filtrowaniem i wyszukiwaniem
     [HttpGet]
     public async Task<IActionResult> GetAllProducts(
         [FromQuery] int? categoryId,
@@ -26,15 +26,15 @@ public class ProductsController : ControllerBase
     {
         var query = _context.Products.AsQueryable();
 
-        // Filter by category
+        // Filtrowanie według kategorii
         if (categoryId.HasValue)
             query = query.Where(p => p.CategoryId == categoryId);
 
-        // Search by name or description
+        // Wyszukiwanie według nazwy lub opisu
         if (!string.IsNullOrEmpty(search))
             query = query.Where(p => p.Name.Contains(search) || (p.Description != null && p.Description.Contains(search)));
 
-        // Filter by availability
+        // Filtrowanie według dostępności
         if (available.HasValue)
             query = query.Where(p => available.Value ? p.Stock > 0 : p.Stock == 0);
 
@@ -57,10 +57,11 @@ public class ProductsController : ControllerBase
         return Ok(productDtos);
     }
 
-    // 2. GET /api/Products/{id}: Retrieve a specific product by its ID
+    //Pobierz konkretny produkt według jego ID
     [HttpGet("{id}")]
     public async Task<IActionResult> GetProductById(int id)
     {
+        // Pobieranie produktu wraz z kategorią
         var product = await _context.Products
             .Include(p => p.Category)
             .FirstOrDefaultAsync(p => p.ProductId == id);
@@ -83,10 +84,11 @@ public class ProductsController : ControllerBase
         return Ok(productDto);
     }
 
-    // 3. GET /api/Products/Featured: Retrieve a featured product
+    // Pobierz wyróżniony produkt
     [HttpGet("featured")]
     public async Task<IActionResult> GetFeaturedProduct()
     {
+        // Pobieranie losowego produktu, który jest dostępny w magazynie
         var product = await _context.Products
             .Where(p => p.Stock > 0)
             .OrderBy(r => Guid.NewGuid())
@@ -111,10 +113,11 @@ public class ProductsController : ControllerBase
     [HttpPost("AddToCart")]
     public async Task<IActionResult> AddToCart([FromBody] AddToCartDto addToCartDto)
     {
-        // Validate input
+        
         if (addToCartDto.Quantity <= 0)
             return BadRequest("Quantity must be greater than 0.");
 
+        // Pobieranie produktu z bazy danych
         var product = await _context.Products.FindAsync(addToCartDto.ProductId);
         if (product == null)
             return NotFound($"Product with ID {addToCartDto.ProductId} not found.");
@@ -122,16 +125,16 @@ public class ProductsController : ControllerBase
         if (product.Stock < addToCartDto.Quantity)
             return BadRequest("Not enough stock available.");
 
-        // Get user identifier
+        // Pobieranie identyfikatora użytkownika
         var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
-        // Check if the product is already in the cart
+        // Sprawdź, czy produkt jest już w koszyku
         var cartItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == addToCartDto.ProductId);
 
         if (cartItem == null)
         {
-            // Add new item to the cart
+            // Dodaj nowy produkt do koszyka
             cartItem = new CartItem
             {
                 UserIdentifier = userIdentifier,
@@ -143,7 +146,7 @@ public class ProductsController : ControllerBase
         }
         else
         {
-            // Update quantity
+            // Zaktualizuj ilość
             cartItem.Quantity += addToCartDto.Quantity;
         }
 
@@ -158,11 +161,14 @@ public class ProductsController : ControllerBase
         });
     }
 
+    // Pobierz produkty z koszyka
     [HttpGet("cart")]
     public async Task<IActionResult> GetCartItems()
     {
+        // Pobierz identyfikator użytkownika
         var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
+        // Pobieranie produktów z koszyka wraz z produktami
         var cartItems = await _context.CartItems
             .Where(ci => ci.UserIdentifier == userIdentifier)
             .Include(ci => ci.Product)
@@ -181,11 +187,14 @@ public class ProductsController : ControllerBase
         return Ok(cartItemDtos);
     }
 
+    // Zaktualizuj produkt w koszyku
     [HttpPut("UpdateCartItem")]
     public async Task<IActionResult> UpdateCartItem([FromBody] UpdateCartItemDto updateCartItemDto)
     {
+        // Pobierz identyfikator użytkownika
         var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
+        // Pobieranie produktu z koszyka
         var cartItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == updateCartItemDto.ProductId);
 
@@ -195,6 +204,7 @@ public class ProductsController : ControllerBase
         if (updateCartItemDto.Quantity <= 0)
             return BadRequest("Quantity must be greater than 0.");
 
+        // Zaktualizuj ilość
         cartItem.Quantity = updateCartItemDto.Quantity;
         await _context.SaveChangesAsync();
 
@@ -207,17 +217,21 @@ public class ProductsController : ControllerBase
         });
     }
 
+    // Usuń produkt z koszyka
     [HttpDelete("RemoveFromCart/{productId}")]
     public async Task<IActionResult> RemoveFromCart(int productId)
     {
+        // Pobierz identyfikator użytkownika
         var userIdentifier = User.Identity.IsAuthenticated ? User.FindFirst(ClaimTypes.NameIdentifier)?.Value : Request.Headers["sessionId"].ToString();
 
+        // Pobieranie produktu z koszyka
         var cartItem = await _context.CartItems
             .FirstOrDefaultAsync(ci => ci.UserIdentifier == userIdentifier && ci.ProductId == productId);
 
         if (cartItem == null)
             return NotFound($"Cart item with Product ID {productId} not found.");
 
+        // Usuń produkt z koszyka
         _context.CartItems.Remove(cartItem);
         await _context.SaveChangesAsync();
 
@@ -229,6 +243,7 @@ public class ProductsController : ControllerBase
         });
     }
 
+    // Złóż zamówienie
     [HttpPost("PlaceOrder")]
     public async Task<IActionResult> PlaceOrder()
     {
@@ -295,22 +310,26 @@ public class ProductsController : ControllerBase
         // Usuń produkty z koszyka
         _context.CartItems.RemoveRange(cartItems);
 
-        // Zapisz zmiany w bazie danych
+        
         await _context.SaveChangesAsync();
 
         return Ok(new { Message = "Order placed successfully.", OrderId = order.OrderId });
     }
 
+    // Pobierz historię zamówień
     [HttpGet("order-history")]
     public async Task<IActionResult> GetOrderHistory()
     {
+        // Sprawdź, czy użytkownik jest zalogowany
         if (!User.Identity.IsAuthenticated)
         {
             return Unauthorized("User must be logged in to view order history.");
         }
 
+        // Pobierz identyfikator użytkownika
         var userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
+        // Pobierz zamówienia użytkownika wraz ze szczegółami zamówień i produktami
         var orders = await _context.Orders
             .Where(o => o.ClientEmail == userId)
             .Include(o => o.OrderDetails)
