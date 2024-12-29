@@ -75,7 +75,8 @@
             }
         </div>
         <div class="text-right mt-6">
-            <button @onclick="PlaceOrder" class="bg-green-500 text-white p-3 rounded hover:bg-green-700">Place Order</button>
+            <h4 class="text-xl font-bold mb-4">Total: @totalAmount.ToString("C")</h4>
+            <button @onclick="PlaceOrder" class="bg-green-500 text-white p-3 rounded hover:bg-green-700">Pay and place order</button>
         </div>
     }
 </div>
@@ -96,6 +97,7 @@
 
 @code {
     private List<CartItemDto> cartItems;
+    private decimal totalAmount = 0;
     private bool showToast = false; // Flaga kontrolująca widoczność komunikatu toast
     private bool showErrorToast = false; // Flaga kontrolująca widoczność komunikatu błędu toast
     private string toastMessage; // Treść komunikatu toast
@@ -104,6 +106,7 @@
     protected override async Task OnInitializedAsync()
     {
         await LoadCartItems();
+        CalculateTotalAmount();
     }
 
     private async Task LoadCartItems()
@@ -171,11 +174,20 @@
                 var error = await response.Content.ReadAsStringAsync();
                 Console.WriteLine($"Error updating cart item: {error}");
             }
+            else 
+            {
+                CalculateTotalAmount();
+            }
         }
         catch (Exception ex)
         {
             Console.WriteLine($"Exception: {ex.Message}");
         }
+    }
+
+    private void CalculateTotalAmount()
+    {
+        totalAmount = cartItems?.Sum(item => item.Price * item.Quantity) ?? 0;
     }
 
     private async Task RemoveFromCart(int productId)
